@@ -1,7 +1,9 @@
 import numpy as np
 from vispy import app, gloo
 from threading import Thread
-import math
+from numpy.random import random
+from time import sleep
+import serial
 
 app.use_app('PyQt5')
 
@@ -10,7 +12,7 @@ vertex = """
 attribute vec2 a_position;
 void main (void)
 {
-    gl_Position = vec4(a_position, 0.0, 1.0);
+    gl_Position = vec4(a_position, 0.0, 1);
 }
 """
 
@@ -22,30 +24,28 @@ void main()
 """
 
 program = gloo.Program(vertex, fragment)
+current_data = np.zeros(1000)
 
-program['a_position'] = np.c_[
-        np.linspace(-1.0, +1.0, 1000),
-        #np.random.uniform(-0.5, +0.5, 1000)].astype(np.float32)
-        np.zeros(1000)].astype(np.float32)
+
+def update_program_data():
+    program['a_position'] = np.c_[
+        np.linspace(-0.95, 1, 1000),
+        current_data].astype(np.float32)
+update_program_data()
 
 
 class Canvas(app.Canvas):
     def __init__(self, *args, **kwargs):
         app.Canvas.__init__(self, *args, **kwargs)
+        gloo.set_clear_color((1, 1, 1, 1))
         self._timer = app.Timer('auto', connect=self.on_timer, start=True)
-        self.tick = 0
 
     def on_draw(self, event):
         gloo.clear(color=True)
         program.draw('line_strip')
 
     def on_timer(self, event):
-        #program['a_position'] = np.c_[
-        #    np.linspace(-1.0, +1.0, 1000),
-        #    np.random.uniform(-0.5, +0.5, 1000)].astype(np.float32)
-        self.tick += 1 / 60.0
-        c = abs(math.sin(self.tick))
-        gloo.set_clear_color((c, c, c, 1))
+        update_program_data()
         self.update()
 
     def on_resize(self, event):
@@ -53,15 +53,18 @@ class Canvas(app.Canvas):
 
 
 def threaded(arg):
-    pass
+    while True:
+        global current_data
+        current_data = np.roll(current_data, -1, 0)
+        current_data[-1] = random()
+        sleep(.05)
 
-th = Thread(target=threaded, args=(10,))
+
+th = Thread(target=threaded, args=(10,), daemon=True)
 th.start()
-#th.join()
-
-print(program['a_position'][0])
 
 canvas = Canvas(keys='interactive', always_on_top=True)
 canvas.show()
 app.run()
+
 
