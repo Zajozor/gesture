@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QVBoxLayout
 from constants import *
 from input_parser import InputParser
 from interpreters.min_square.min_square import MinSquareInterpreter
+import vispy
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -15,7 +16,7 @@ if __name__ == '__main__':
     # Init the sensor window, resize and reposition
     sensor_window = QWidget()
     sensor_window.show()
-    sensor_window.setWindowTitle('Sensor Input')
+    sensor_window.setWindowTitle(SENSOR_WINDOW_TITLE)
     sensor_window.resize(SENSOR_WINDOW_WIDTH, SENSOR_WINDOW_HEIGHT)
 
     frame_geometry = sensor_window.frameGeometry()
