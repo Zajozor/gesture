@@ -6,7 +6,7 @@ from serial import SerialException
 
 class InputParser:
     def __init__(self):
-        self.serial_port_name = 'COM3'
+        self.serial_port_name = SERIAL_PORT_NAME
         self.serial_port = None
         self.buffer = (0, 0, 0)
 

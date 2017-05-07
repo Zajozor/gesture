@@ -1,3 +1,7 @@
+import logging
+
+import pyqtgraph as pg
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtWidgets import QGridLayout
 from PyQt5.QtWidgets import QHBoxLayout
@@ -7,14 +11,11 @@ from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QScrollArea
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtCore import Qt, QTimer
-from constants import *
-from interpreters.interpreter import Interpreter
-import pyqtgraph as pg
-import logging
-
 from interpreters.min_square.min_square_gesture import MinSquareGesture
 from qlabel_log_handler import QLabelHandler
+
+from constants import *
+from qt_flavor.interpreters.interpreter import Interpreter
 
 
 class MinSquareInterpreter(Interpreter):

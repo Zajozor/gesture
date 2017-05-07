@@ -1,14 +1,15 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QDesktopWidget, QLabel,\
-    QScrollArea
+
 import pyqtgraph as pg
+from PyQt5.QtWidgets import QApplication, QWidget, QGridLayout, QDesktopWidget, QLabel, \
+    QScrollArea
 from PyQt5.QtWidgets import QListWidget
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
-from constants import *
 from input_parser import InputParser
-from interpreters.min_square.min_square import MinSquareInterpreter
-import vispy
+
+from constants import *
+from qt_flavor.interpreters.min_square.min_square import MinSquareInterpreter
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
