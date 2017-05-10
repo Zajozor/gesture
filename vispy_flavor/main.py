@@ -4,6 +4,7 @@ from threading import Thread
 from time import sleep
 from vispy_flavor.input_parser import InputParser
 from vispy_flavor.int_2d_gesture_display import entry_2d_gesture_display
+from vispy_flavor.int_fourier_display import entry_fourier_display
 from multiprocessing import Process
 import multiprocessing
 
@@ -65,9 +66,8 @@ if __name__ == '__main__':
         def on_resize(self, event):
             gloo.set_viewport(0, 0, *event.size)
 
-
     # Options: entry_2d_gesture_display,
-    targets = [entry_2d_gesture_display, entry_2d_gesture_display]
+    targets = [entry_fourier_display, entry_fourier_display, entry_fourier_display, entry_fourier_display]
     queues = []
 
     for target in targets:
