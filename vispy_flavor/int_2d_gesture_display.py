@@ -75,7 +75,7 @@ class GestureCanvas(app.Canvas):
 
 
 def entry_2d_gesture_display(queue, gesture_size=500):
-    canvas = GestureCanvas(gesture_size, keys='interactive', always_on_top=True, title='2D_display', position=(45, 100))
+    canvas = GestureCanvas(gesture_size, keys='interactive', always_on_top=False, title='2D_display', position=(45, 100))
 
     th = Thread(target=canvas.get_from_queue, args=(queue, ), daemon=True)
     th.start()

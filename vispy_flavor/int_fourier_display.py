@@ -4,6 +4,7 @@ from threading import Thread
 from time import sleep
 import queue
 import math
+import scipy.spatial
 from vispy.visuals import TextVisual
 from vispy.visuals.transforms import TransformSystem
 
@@ -104,8 +105,9 @@ class FourierCanvas(app.Canvas):
 
     def get_from_queue(self, queue):
         c = 10000.0
-        c_dist = 200.0
-        part_dist = 4
+        c_dist = 1.3
+        #c_dist = 300
+        part_dist = 32
 
         while True:
             if not self.recording:
@@ -122,9 +124,12 @@ class FourierCanvas(app.Canvas):
 
                 for i in range(3):
                     self.current_fourier[i] = np.fft.fft(self.current_data[i])
-                    self.distances[i] = np.linalg.norm(
-                        self.current_fourier[i][:self.gesture_size//part_dist] -
-                        self.loaded_fourier[i][:self.gesture_size//part_dist])
+                    self.distances[i] = scipy.spatial.distance.cosine(
+                        abs(self.current_fourier[i][:self.gesture_size//part_dist]),
+                        abs(self.loaded_fourier[i][:self.gesture_size//part_dist]))
+                    #self.distances[i] = np.linalg.norm(
+                    #   self.current_fourier[i][:self.gesture_size//part_dist] -
+                    #   self.loaded_fourier[i][:self.gesture_size//part_dist])
 
                 self.dist_data = np.roll(self.dist_data, -1, 0)
                 self.dist_data[-1] = np.sum(self.distances)/c_dist
@@ -150,7 +155,7 @@ class FourierCanvas(app.Canvas):
 
 
 def entry_fourier_display(queue, gesture_size=500):
-    canvas = FourierCanvas(gesture_size, keys='interactive', always_on_top=True, title='Fourier', position=(50, 150))
+    canvas = FourierCanvas(gesture_size, keys='interactive', always_on_top=False, title='Fourier', position=(50, 150))
 
     th = Thread(target=canvas.get_from_queue, args=(queue, ), daemon=True)
     th.start()

@@ -67,7 +67,7 @@ if __name__ == '__main__':
             gloo.set_viewport(0, 0, *event.size)
 
     # Options: entry_2d_gesture_display,
-    targets = [entry_fourier_display, entry_fourier_display, entry_fourier_display, entry_fourier_display]
+    targets = [entry_fourier_display, entry_fourier_display, entry_fourier_display]
     queues = []
 
     for target in targets:
@@ -101,7 +101,7 @@ if __name__ == '__main__':
     th2 = Thread(target=data_reader, daemon=True)
     th2.start()
 
-    canvas = Canvas(keys='interactive', always_on_top=True, position=(850, 100))
+    canvas = Canvas(keys='interactive', always_on_top=False, position=(850, 100))
     canvas.show()
     app.run()
 
