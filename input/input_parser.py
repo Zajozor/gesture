@@ -2,21 +2,31 @@ import time
 from constants import *
 import serial
 from serial import SerialException
+from threading import Thread
 
 
 class InputParser:
-    def __init__(self):
-        self.serial_port_name = SERIAL_PORT_NAME
+    def __init__(self, serial_port_name=''):
+        self.serial_port_name = serial_port_name if serial_port_name else SERIAL_PORT_NAME
         self.serial_port = None
         self.buffer = (0, 0, 0)
 
-    def get_next(self):
+        self.reading = False
+        self.status = 'pre-init'
+        self.run_thread = None
+
+    def get_data(self):
         return self.buffer
 
-    reading = False
-    status = 'pre-init'
+    def start(self, threaded):
+        if threaded:
+            self.run_thread = Thread(target=self.init_serial, daemon=True)
+            self.run_thread.start()
+        else:
+            self.init_serial()
 
     def init_serial(self):
+        # Open the serial port
         if not self.reading:
             self.reading = True
 
@@ -34,6 +44,7 @@ class InputParser:
                 self.status = 'error in init'
                 self.reading = False
 
+        # Read the first handshake values
         reading_init = True
         while self.reading and reading_init:
             try:
@@ -49,11 +60,14 @@ class InputParser:
                     if serial_line.startswith(prefix):
                         reading_init = False
                         self.status = 'reading'
+                        break
             except (ValueError, SerialException):
                 self.status = 'read error'
 
-            time.sleep(0.2)
+            # Give the sensor a time to initialize
+            time.sleep(0.1)
 
+        # Start reading
         if not reading_init and self.reading:
             self.read_serial()
 
@@ -72,6 +86,8 @@ class InputParser:
                 self.buffer = list(map(float, data[1:4]))
             except (ValueError, IndexError, TypeError):
                 self.status = 'format read error'
+            if data[0] == 'switching':
+                print(data)
 
     def stop_serial(self):
         if self.reading:
