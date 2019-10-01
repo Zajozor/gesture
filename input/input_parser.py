@@ -1,99 +1,115 @@
-import time
-from constants import *
+import constants as cn
 import serial
-from serial import SerialException
+import time
 from threading import Thread
+from utils import logger
 
 
 class InputParser:
-    def __init__(self, serial_port_name=''):
-        self.serial_port_name = serial_port_name if serial_port_name else SERIAL_PORT_NAME
+    def __init__(self, serial_port_name='', sensor_count=5, verbose=False):
+        self.serial_port_name = serial_port_name if serial_port_name else cn.SERIAL_PORT_NAME
         self.serial_port = None
-        self.buffer = (0, 0, 0)
+        self.sensor_count = sensor_count
+        self.buffer = [(0.0, 0.0, 0.0) for _ in range(sensor_count)]
+        self.has_new_data = [False] * sensor_count
+        self.verbose = verbose
 
-        self.reading = False
-        self.status = 'pre-init'
+        self.active = False
         self.run_thread = None
 
-    def get_data(self):
-        return self.buffer
+    def get_data(self, i=None):
+        if i is None:
+            for j in range(self.sensor_count):
+                self.has_new_data[j] = False
+            return self.buffer
+        self.has_new_data[i] = False
+        return self.buffer[i]
 
     def start(self, threaded):
         if threaded:
-            self.run_thread = Thread(target=self.init_serial, daemon=True)
+            self.run_thread = Thread(target=self.run_serial, daemon=True)
             self.run_thread.start()
         else:
+            self.run_serial()
+
+    def run_serial(self):
+        while True:  # If the serial drops, try init again and then reading
             self.init_serial()
-
-    def init_serial(self):
-        # Open the serial port
-        if not self.reading:
-            self.reading = True
-
-            try:
-                self.status = 'init'
-                self.serial_port = serial.Serial(port=self.serial_port_name,
-                                                 baudrate=SERIAL_PORT_BAUD_RATE,
-                                                 timeout=1000,
-                                                 write_timeout=1000)
-            except (ValueError, SerialException):
-                try:
-                    self.serial_port.close()
-                except (SerialException, AttributeError):
-                    self.serial_port = None
-                self.status = 'error in init'
-                self.reading = False
-
-        # Read the first handshake values
-        reading_init = True
-        while self.reading and reading_init:
-            try:
-                self.serial_port.write(b"ready")
-                self.status = 'sent ready'
-            except (ValueError, SerialException):
-                self.status = 'write error'
-
-            try:
-                serial_line = self.serial_port.readline().rstrip().decode("utf-8")
-
-                for prefix in SENSOR_DATA_PREFIXES:
-                    if serial_line.startswith(prefix):
-                        reading_init = False
-                        self.status = 'reading'
-                        break
-            except (ValueError, SerialException):
-                self.status = 'read error'
-
-            # Give the sensor a time to initialize
+            self.read_serial()
             time.sleep(0.1)
 
-        # Start reading
-        if not reading_init and self.reading:
-            self.read_serial()
+    def init_serial(self):
+        while not self.active:
+            try:
+                self.serial_port = serial.Serial(port=self.serial_port_name,
+                                                 baudrate=cn.SERIAL_PORT_BAUD_RATE,
+                                                 timeout=1000,
+                                                 write_timeout=1000)
+                self.serial_port.write(b"starting")
+                self.serial_port.readline().rstrip().decode("utf-8")
+                logger.info('Serial port successfully opened.')
+                self.active = True
+            except (ValueError, serial.SerialException):
+                logger.warning('Error during serial port init.')
+                self.stop_serial()
+                time.sleep(0.5)
 
     def read_serial(self):
-        while self.reading:
+        while self.active:
             try:
-                data = self.serial_port.readline().rstrip().decode("utf-8").split()  # Semi-Blocking io from serial
-            except (AttributeError, UnicodeDecodeError, TypeError):
-                self.status = 'format read error'
-                continue
-            except SerialException:
-                self.status = 'serial read error'
+                data = self.serial_port.readline().rstrip().decode().split()
+                if self.verbose:
+                    logger.debug(f'Serial received data: {data}')
+            except (AttributeError, UnicodeDecodeError, TypeError, serial.SerialException) as e:
+                logger.warning(f'Serial reading error: {e}')
+                self.stop_serial()
                 break
-
             try:
-                self.buffer = list(map(float, data[1:4]))
+                sensor_id_offset = 2 # TODO extract constant (this is the multiplexer offset)
+                sensor_id = int(data[0]) - sensor_id_offset
+                if 0 <= sensor_id < self.sensor_count:
+                    self.buffer[sensor_id] = (float(data[2]), float(data[3]), float(data[4]))
+                    self.has_new_data[sensor_id] = True
             except (ValueError, IndexError, TypeError):
-                self.status = 'format read error'
-            if data[0] == 'switching':
-                print(data)
+                # On format errors, we do not restart the serial
+                logger.warning(f'Invalid data received: {data}')
 
     def stop_serial(self):
-        if self.reading:
+        if self.active:
             try:
                 self.serial_port.close()
-            except (SerialException, AttributeError):
+            except (serial.SerialException, AttributeError):
                 self.serial_port = None
-            self.reading = False
-            self.status = 'stopped'
+            self.active = False
+
+
+if __name__ == '__main__':
+    """Example usage below"""
+
+    def raw_serial():
+        serial_port = serial.Serial(port='/dev/cu.SLAB_USBtoUART',
+                                    baudrate=9600,
+                                    timeout=1000,
+                                    write_timeout=1000)
+        logger.warning('Running in echo mode for the serial port')
+        while True:
+            serial_line = serial_port.readline().rstrip().decode("utf-8")
+            logger.info(serial_line)
+
+
+    def try_input_parser():
+        ip = InputParser('/dev/cu.SLAB_USBtoUART')
+        ip.start(threaded=True)
+        prev_buffer = ip.buffer
+        while True:
+            changed = 0
+            for i in range(len(ip.buffer)):
+                if prev_buffer[i] != ip.buffer[i]:
+                    changed += 1
+            logger.info(f'Changed count: {changed}, Buffer is: {ip.buffer}')
+            prev_buffer = ip.buffer[:]
+            time.sleep(0.1)
+
+
+    # raw_serial()
+    try_input_parser()
