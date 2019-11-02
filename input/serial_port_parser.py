@@ -1,3 +1,7 @@
+from typing import Union, List, Tuple
+
+import numpy as np
+
 import constants as cn
 import serial
 import time
@@ -5,38 +9,40 @@ from threading import Thread
 from utils import logger
 
 
-class InputParser:
-    def __init__(self, serial_port_name='', sensor_count=5, verbose=False):
-        self.serial_port_name = serial_port_name if serial_port_name else cn.SERIAL_PORT_NAME
-        self.serial_port = None
-        self.sensor_count = sensor_count
-        self.buffer = [(0.0, 0.0, 0.0) for _ in range(sensor_count)]
-        self.has_new_data = [False] * sensor_count
-        self.verbose = verbose
+class SerialPortParser:
+    """
+    The responsibility of the SerialPortParser is to open up a serial port and read data from it.
+    This data can contain errors, the sensor can drop out, etc. so all the errors and retrying
+    should be handled here.
+    The data is read as fast as possible, relying on the fact, that the throughput of the
+    serial port will not be too high for this to be a problem.
 
-        self.active = False
-        self.run_thread = None
+    Input: Serial port
+    Output: Data in a buffer
+    """
+    def __init__(self, serial_port_name: str = cn.SERIAL_PORT_NAME, verbose: bool = False):
+        self.serial_port_name: str = serial_port_name
+        self.serial_port: Union[serial.Serial, None] = None
 
-    def get_data(self, i=None):
-        if i is None:
-            for j in range(self.sensor_count):
-                self.has_new_data[j] = False
-            return self.buffer
-        self.has_new_data[i] = False
-        return self.buffer[i]
+        self.buffer: List[Tuple[float, float, float]] = [(0.0, 0.0, 0.0) for _ in range(cn.SENSOR_COUNT)]
+        self._data_changed: List[bool] = [False] * cn.SENSOR_COUNT
+
+        self.verbose: bool = verbose
+        self.active: bool = False
+        self.thread: Union[Thread, None] = None
 
     def start(self, threaded):
-        if threaded:
-            self.run_thread = Thread(target=self.run_serial, daemon=True)
-            self.run_thread.start()
-        else:
-            self.run_serial()
+        def run_serial_parsing():
+            while True:  # If the serial drops, try init again and then reading
+                self.init_serial()
+                self.read_serial()
+                time.sleep(0.1)
 
-    def run_serial(self):
-        while True:  # If the serial drops, try init again and then reading
-            self.init_serial()
-            self.read_serial()
-            time.sleep(0.1)
+        if threaded:
+            self.thread = Thread(target=run_serial_parsing, daemon=True)
+            self.thread.start()
+        else:
+            run_serial_parsing()
 
     def init_serial(self):
         while not self.active:
@@ -65,11 +71,10 @@ class InputParser:
                 self.stop_serial()
                 break
             try:
-                sensor_id_offset = 2 # TODO extract constant (this is the multiplexer offset)
-                sensor_id = int(data[0]) - sensor_id_offset
-                if 0 <= sensor_id < self.sensor_count:
+                sensor_id = int(data[0]) - cn.SENSOR_ID_OFFSET
+                if 0 <= sensor_id < cn.SENSOR_COUNT:
                     self.buffer[sensor_id] = (float(data[2]), float(data[3]), float(data[4]))
-                    self.has_new_data[sensor_id] = True
+                    self._data_changed[sensor_id] = True
             except (ValueError, IndexError, TypeError):
                 # On format errors, we do not restart the serial
                 logger.warning(f'Invalid data received: {data}')
@@ -81,6 +86,17 @@ class InputParser:
             except (serial.SerialException, AttributeError):
                 self.serial_port = None
             self.active = False
+
+    # TODO change serial...
+
+    @property
+    def data(self):
+        self._data_changed = [False] * cn.SENSOR_COUNT
+        return np.array(self.buffer) / cn.DATA_NORMALIZATION_COEFFICIENT
+
+    @property
+    def data_changed(self):
+        return self._data_changed[:]
 
 
 if __name__ == '__main__':
@@ -98,7 +114,7 @@ if __name__ == '__main__':
 
 
     def try_input_parser():
-        ip = InputParser('/dev/cu.SLAB_USBtoUART')
+        ip = SerialPortParser('/dev/cu.SLAB_USBtoUART')
         ip.start(threaded=True)
         prev_buffer = ip.buffer
         while True:

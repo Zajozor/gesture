@@ -9,10 +9,10 @@ import threading
 from random import randint
 from sarge import Capture, run
 from utils import logger
+import constants as cn
 
-VALUES_RANGE = 2000
-TICK_CHANGE = 100
-SENSOR_COUNT = 5
+VALUES_RANGE = 20
+TICK_CHANGE = 1
 
 
 def randomize_data():
@@ -22,7 +22,7 @@ def randomize_data():
 
 
 def generate_data():
-    sensor_id = randint(0, SENSOR_COUNT - 1)
+    sensor_id = cn.SENSOR_ID_OFFSET + randint(0, cn.SENSOR_COUNT - 1)
     for k in current:
         current[k] += math.copysign(randint(0, TICK_CHANGE),
                                     randint(-VALUES_RANGE * 4, VALUES_RANGE * 4) - current[k])
