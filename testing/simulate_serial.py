@@ -4,12 +4,14 @@
 # cat < /dev/ttys001
 import math
 import os
-import time
 import threading
+import time
 from random import randint
+
 from sarge import Capture, run
-from utils import logger
+
 import constants as cn
+from utils import logger
 
 VALUES_RANGE = 20
 TICK_CHANGE = 1
@@ -33,7 +35,7 @@ def start_ttys():
     p = run('socat -d -d pty,raw,echo=0 pty,raw,echo=0', stderr=Capture(), async_=True)
     time.sleep(0.05)  # Wait for output to be available
     lines = p.stderr.text.split('\n')
-    assert(len(lines) == 4)
+    assert len(lines) == 4
     _left = lines[0].split(' ')[-1]
     _right = lines[1].split(' ')[-1]
     return _left, _right

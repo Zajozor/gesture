@@ -2,10 +2,8 @@ from vispy import app
 
 from input.data_router import DataRouter
 from input.serial_port_parser import SerialPortParser
-
 from processing.consumers.recording_consumer import RecordingConsumer
 from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple
-
 
 if __name__ == '__main__':
     canvas_consumer = SignalGridCanvasConsumer(cell_contents=(

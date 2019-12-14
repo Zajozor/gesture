@@ -1,11 +1,11 @@
+import time
+from threading import Thread
 from typing import Union, List, Tuple
 
 import numpy as np
+import serial
 
 import constants as cn
-import serial
-import time
-from threading import Thread
 from utils import logger
 
 
@@ -20,6 +20,7 @@ class SerialPortParser:
     Input: Serial port
     Output: Data in a buffer
     """
+
     def __init__(self, serial_port_name: str = cn.SERIAL_PORT_NAME, verbose: bool = False):
         self.serial_port_name: str = serial_port_name
         self.serial_port: Union[serial.Serial, None] = None
@@ -101,6 +102,7 @@ class SerialPortParser:
 
 if __name__ == '__main__':
     """Example usage below"""
+
 
     def raw_serial():
         serial_port = serial.Serial(port='/dev/cu.SLAB_USBtoUART',

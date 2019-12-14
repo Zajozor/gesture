@@ -28,7 +28,6 @@ class DataViewer(QWidget):
 
         self.setLayout(layout)
         if show:
-
             self.window().show()
 
         self.shown_canvases = []

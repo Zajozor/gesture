@@ -124,6 +124,7 @@ class SignalGridCanvas(app.Canvas):
     def roll_signal_values_multi(self, signals: List[Tuple[int, np.ndarray]]):
         for signal_id, values in signals:
             self.roll_signal_values(signal_id, values)
+
     # TODO add removed methods
 
     def on_draw(self, _):

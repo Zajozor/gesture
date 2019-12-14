@@ -1,8 +1,9 @@
 from typing import List, Tuple
-import constants as cn
+
 import numpy as np
 from vispy import app
 
+import constants as cn
 from graphics.widgets.signal_grid_canvas import SignalGridCanvas
 from processing.consumers.consumer_mixin import ConsumerMixin
 

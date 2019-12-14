@@ -1,9 +1,8 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QComboBox, QListWidget
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QListWidget
 
 
 class RecordingController:
     def __init__(self, start_callback, stop_callback):
-
         self.window = QWidget()
         layout = QVBoxLayout()
 

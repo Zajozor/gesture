@@ -1,16 +1,16 @@
-from typing import List
 import time
-import constants as cn
 from os import path
+from threading import Event
+from threading import Thread
+from typing import List
+
 import numpy as np
 
-from graphics.widgets.signal_grid_canvas import create_simple_canvas
-from threading import Event
-
-from processing.consumers.consumer_mixin import ConsumerMixin
+import constants as cn
 from graphics.widgets.recording_controller import RecordingController
+from graphics.widgets.signal_grid_canvas import create_simple_canvas
+from processing.consumers.consumer_mixin import ConsumerMixin
 from utils import logger
-from threading import Thread
 
 
 class RecordingConsumer(ConsumerMixin):

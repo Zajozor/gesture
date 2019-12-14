@@ -1,10 +1,40 @@
 [[package]]
+category = "dev"
+description = "Discover and load entry points from installed packages."
+name = "entrypoints"
+optional = false
+python-versions = ">=2.7"
+version = "0.3"
+
+[[package]]
+category = "dev"
+description = "the modular source code checker: pep8, pyflakes and co"
+name = "flake8"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "3.7.9"
+
+[package.dependencies]
+entrypoints = ">=0.3.0,<0.4.0"
+mccabe = ">=0.6.0,<0.7.0"
+pycodestyle = ">=2.5.0,<2.6.0"
+pyflakes = ">=2.1.0,<2.2.0"
+
+[[package]]
 category = "main"
 description = "Freetype python bindings"
 name = "freetype-py"
 optional = false
 python-versions = "*"
 version = "2.1.0.post1"
+
+[[package]]
+category = "dev"
+description = "McCabe checker, plugin for flake8"
+name = "mccabe"
+optional = false
+python-versions = "*"
+version = "0.6.1"
 
 [[package]]
 category = "main"
@@ -15,12 +45,28 @@ python-versions = ">=3.5"
 version = "1.17.4"
 
 [[package]]
+category = "dev"
+description = "Python style guide checker"
+name = "pycodestyle"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.5.0"
+
+[[package]]
+category = "dev"
+description = "passive checker of Python programs"
+name = "pyflakes"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+version = "2.1.1"
+
+[[package]]
 category = "main"
 description = "Python bindings for the Qt cross platform UI and application toolkit"
 name = "pyqt5"
 optional = false
 python-versions = "*"
-version = "5.13.2"
+version = "5.13.1"
 
 [package.dependencies]
 PyQt5_sip = ">=4.19.19,<13"
@@ -32,6 +78,17 @@ name = "pyqt5-sip"
 optional = false
 python-versions = ">=3.5"
 version = "12.7.0"
+
+[[package]]
+category = "dev"
+description = "PEP561 stub files for the PyQt5 framework"
+name = "pyqt5-stubs"
+optional = false
+python-versions = "*"
+version = "5.13.1.3"
+
+[package.dependencies]
+PyQt5 = "5.13.1"
 
 [[package]]
 category = "main"
@@ -75,10 +132,18 @@ sdl2 = ["pysdl2"]
 wx = ["wxpython"]
 
 [metadata]
-content-hash = "52a51c049494a1234346b5b5a82a5dc1545cdc200e36b52906de3ac0af68a280"
+content-hash = "4d9bb7baafd312cbd553317b4b4d8a34299a2f2700db824bed3f4c9b3e4747a9"
 python-versions = "^3.8"
 
 [metadata.files]
+entrypoints = [
+    {file = "entrypoints-0.3-py2.py3-none-any.whl", hash = "sha256:589f874b313739ad35be6e0cd7efde2a4e9b6fea91edcc34e58ecbb8dbe56d19"},
+    {file = "entrypoints-0.3.tar.gz", hash = "sha256:c70dd71abe5a8c85e55e12c19bd91ccfeec11a6e99044204511f9ed547d48451"},
+]
+flake8 = [
+    {file = "flake8-3.7.9-py2.py3-none-any.whl", hash = "sha256:49356e766643ad15072a789a20915d3c91dc89fd313ccd71802303fd67e4deca"},
+    {file = "flake8-3.7.9.tar.gz", hash = "sha256:45681a117ecc81e870cbf1262835ae4af5e7a8b08e40b944a8a6e6b895914cfb"},
+]
 freetype-py = [
     {file = "freetype-py-2.1.0.post1.tar.gz", hash = "sha256:76383bb3e59efa6ce0be1797ed70207d7d1e421611df3aceb269673c4a77c2cc"},
     {file = "freetype_py-2.1.0.post1-py2.py3-none-any.whl", hash = "sha256:0f14ffc1715e3d0f01e7c9d07980b10b7143595d9322bb6da3fc74db5251fa8c"},
@@ -87,6 +152,10 @@ freetype-py = [
     {file = "freetype_py-2.1.0.post1-py2.py3-none-manylinux1_x86_64.whl", hash = "sha256:84e9879bb5f87dc1eb5342230a13e7ea10f520aa06a4d1c7b298208bbac08110"},
     {file = "freetype_py-2.1.0.post1-py2.py3-none-win32.whl", hash = "sha256:d179759b245bb01f5603acd071aea99d97d993a28c4e71fdc4bd7530c49931f9"},
     {file = "freetype_py-2.1.0.post1-py2.py3-none-win_amd64.whl", hash = "sha256:eda77d57acdfe74d1cf3958b5fb5aaea21a2866f4e8d7632c06123d6014f9e0c"},
+]
+mccabe = [
+    {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
+    {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 numpy = [
     {file = "numpy-1.17.4-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:ede47b98de79565fcd7f2decb475e2dcc85ee4097743e551fe26cfc7eb3ff143"},
@@ -111,11 +180,19 @@ numpy = [
     {file = "numpy-1.17.4-cp38-cp38-win_amd64.whl", hash = "sha256:ada4805ed51f5bcaa3a06d3dd94939351869c095e30a2b54264f5a5004b52170"},
     {file = "numpy-1.17.4.zip", hash = "sha256:f58913e9227400f1395c7b800503ebfdb0772f1c33ff8cb4d6451c06cabdf316"},
 ]
+pycodestyle = [
+    {file = "pycodestyle-2.5.0-py2.py3-none-any.whl", hash = "sha256:95a2219d12372f05704562a14ec30bc76b05a5b297b21a5dfe3f6fac3491ae56"},
+    {file = "pycodestyle-2.5.0.tar.gz", hash = "sha256:e40a936c9a450ad81df37f549d676d127b1b66000a6c500caa2b085bc0ca976c"},
+]
+pyflakes = [
+    {file = "pyflakes-2.1.1-py2.py3-none-any.whl", hash = "sha256:17dbeb2e3f4d772725c777fabc446d5634d1038f234e77343108ce445ea69ce0"},
+    {file = "pyflakes-2.1.1.tar.gz", hash = "sha256:d976835886f8c5b31d47970ed689944a0262b5f3afa00a5a7b4dc81e5449f8a2"},
+]
 pyqt5 = [
-    {file = "PyQt5-5.13.2-5.13.2-cp35.cp36.cp37.cp38-abi3-macosx_10_6_intel.whl", hash = "sha256:3f79de6e9f29e858516cc36ffc2b992e262af841f3799246aec282b76a3eccdf"},
-    {file = "PyQt5-5.13.2-5.13.2-cp35.cp36.cp37.cp38-abi3-manylinux1_x86_64.whl", hash = "sha256:1936c321301f678d4e6703d52860e1955e5c4964e6fd00a1f86725ce5c29083c"},
-    {file = "PyQt5-5.13.2-5.13.2-cp35.cp36.cp37.cp38-none-win32.whl", hash = "sha256:14737bb4673868d15fa91dad79fe293d7a93d76c56d01b3757b350b8dcb32b2d"},
-    {file = "PyQt5-5.13.2-5.13.2-cp35.cp36.cp37.cp38-none-win_amd64.whl", hash = "sha256:509daab1c5aca22e3cf9508128abf38e6e5ae311d7426b21f4189ffd66b196e9"},
+    {file = "PyQt5-5.13.1-5.13.1-cp35.cp36.cp37.cp38-abi3-macosx_10_6_intel.whl", hash = "sha256:73f982b60819cc6d7cb0007b8b0cd11073e2546d74e0463726149e6a9d087caa"},
+    {file = "PyQt5-5.13.1-5.13.1-cp35.cp36.cp37.cp38-abi3-manylinux1_x86_64.whl", hash = "sha256:f8e76070782e68ba200eb2b67babf89ac629df5e36d2f4c680ef34ae40c8f964"},
+    {file = "PyQt5-5.13.1-5.13.1-cp35.cp36.cp37.cp38-none-win32.whl", hash = "sha256:6420d8c9de8746917bd2afe24f29b3722aabde36d1e9f8c34354f5b7fb7b987d"},
+    {file = "PyQt5-5.13.1-5.13.1-cp35.cp36.cp37.cp38-none-win_amd64.whl", hash = "sha256:8e6125f110133069e8f4a085022cfc6b4a0af5b3c9009999a749007c299e965d"},
 ]
 pyqt5-sip = [
     {file = "PyQt5_sip-12.7.0-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:1910c1cb5a388d4e59ebb2895d7015f360f3f6eeb1700e7e33e866c53137eb9e"},
@@ -135,6 +212,9 @@ pyqt5-sip = [
     {file = "PyQt5_sip-12.7.0-cp38-cp38-win32.whl", hash = "sha256:7695dfafb4f5549ce1290ae643d6508dfc2646a9003c989218be3ce42a1aa422"},
     {file = "PyQt5_sip-12.7.0-cp38-cp38-win_amd64.whl", hash = "sha256:091fbbe10a7aebadc0e8897a9449cda08d3c3f663460d812eca3001ca1ed3526"},
     {file = "PyQt5_sip-12.7.0.tar.gz", hash = "sha256:0a067ade558befe4d46335b13d8b602b5044363bfd601419b556d4ec659bca18"},
+]
+pyqt5-stubs = [
+    {file = "PyQt5-stubs-5.13.1.3.tar.gz", hash = "sha256:d1ebd54d12a71edb89b74ee8f5698dcf964946e56464156cc09f82b7b438cd7c"},
 ]
 pyserial = [
     {file = "pyserial-3.4-py2.py3-none-any.whl", hash = "sha256:e0770fadba80c31013896c7e6ef703f72e7834965954a78e71a3049488d4d7d8"},

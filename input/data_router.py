@@ -1,3 +1,4 @@
+import time
 from threading import Thread
 from typing import List, Union
 
@@ -5,13 +6,11 @@ import numpy as np
 from PyQt5.QtWidgets import QApplication
 from vispy import app
 
-from input.serial_port_parser import SerialPortParser
-import time
 import constants as cn
+from input.serial_port_parser import SerialPortParser
 from processing.consumers.consumer_mixin import ConsumerMixin
 from processing.consumers.recording_consumer import RecordingConsumer
 from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple
-
 from utils import logger
 
 
@@ -19,6 +18,7 @@ class DataRouter:
     """
     DataRouter is an intermediary between a serial port parser and some data consumers.
     """
+
     def __init__(self,
                  serial_port_parser_instance: SerialPortParser,
                  enable_count_logs: bool = False,

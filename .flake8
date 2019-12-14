@@ -1,0 +1,5 @@
+[flake8]
+ignore = D203,E303
+exclude = .git,__pycache__,arduino,data,launchpad-api,models,testing/examples
+max-complexity = 10
+max-line-length = 120
