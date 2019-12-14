@@ -4,11 +4,11 @@ import constants as cn
 from os import path
 import numpy as np
 
-from graphics.simple_canvas import create_simple_canvas
+from graphics.widgets.signal_grid_canvas import create_simple_canvas
 from threading import Event
 
-from processing.consumer_mixin import ConsumerMixin
-from graphics.recording_controller import RecordingController
+from processing.consumers.consumer_mixin import ConsumerMixin
+from graphics.widgets.recording_controller import RecordingController
 from utils import logger
 from threading import Thread
 

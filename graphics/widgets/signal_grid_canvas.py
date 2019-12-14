@@ -1,14 +1,15 @@
 from typing import Tuple, List
 
 import numpy as np
-from graphics.shaders.grid_lines import VERTEX_SHADER, FRAGMENT_SHADER
 from vispy import app, gloo
+
 import constants as cn
+from graphics.shaders.grid_lines import VERTEX_SHADER, FRAGMENT_SHADER
 
 
-class SimpleCanvas(app.Canvas):
+class SignalGridCanvas(app.Canvas):
     def __init__(self, rows: int = 1, cols: int = 1, length: int = 200,
-                 program: gloo.Program = None, *args, **kwargs):
+                 program: gloo.Program = None, show=False, *args, **kwargs):
         """
         Creates a canvas that displays multiple signals in a grid.
         :param rows: Row count in the grid.
@@ -37,7 +38,8 @@ class SimpleCanvas(app.Canvas):
         self.program['u_n'] = length
 
         self._timer: app.Timer = app.Timer('auto', connect=self.on_timer, start=True)
-        self.show()
+        if show:
+            self.show()
 
     def _update_program_indices(self):
         """
@@ -72,9 +74,9 @@ class SimpleCanvas(app.Canvas):
         self.row_col_time_indices = np.concatenate([
             self.row_col_time_indices,
             np.c_[  # Add the (row, col, time) triples for the new signal
-               np.repeat(col, self.length),
-               np.repeat(row, self.length),
-               np.arange(self.length)
+                np.repeat(col, self.length),
+                np.repeat(row, self.length),
+                np.arange(self.length)
             ].astype(np.float32),
             np.array([[-1, -1, 0]]).astype(np.float32)
         ])
@@ -122,51 +124,8 @@ class SimpleCanvas(app.Canvas):
     def roll_signal_values_multi(self, signals: List[Tuple[int, np.ndarray]]):
         for signal_id, values in signals:
             self.roll_signal_values(signal_id, values)
+    # TODO add removed methods
 
-    # if colors is not None:
-    #     roll_count = colors.shape[0]
-    #     assert roll_count < self.length
-    #     self.signal_colors[signal_id: signal_id + self.length] = np.concatenate([
-    #         self.signal_colors[signal_id + roll_count: signal_id + self.length],
-    #         colors
-    #     ])
-    # self._update_program_data()
-
-    # def roll_signal_data_multi(self, signal_ids, positions=None, colors=None):
-    #     # TODO optimize rolling and reuse the single method
-    #     count = len(signal_ids)
-    #     if positions is not None:
-    #         assert count == positions.shape[0]
-    #         for i in range(count):
-    #             roll_count = positions.shape[1]
-    #             signal_id = signal_ids[i]
-    #             assert roll_count < self.length
-    #             self.signal_values[signal_id: signal_id + self.length] = np.concatenate([
-    #                 self.signal_values[signal_id + roll_count: signal_id + self.length],
-    #                 positions[i]
-    #             ])
-    #     if colors is not None:
-    #         assert count == colors.shape[0]
-    #         for i in range(count):
-    #             roll_count = colors.shape[1]
-    #             signal_id = signal_ids[i]
-    #             assert roll_count < self.length
-    #             self.signal_colors[signal_id: signal_id + self.length] = np.concatenate([
-    #                 self.signal_colors[signal_id + roll_count: signal_id + self.length],
-    #                 colors[i]
-    #             ])
-    #     self._update_program_data()
-    # def set_signal_data_multi(self, signal_ids, positions=None, colors=None):
-    #     count = len(signal_ids)
-    #     if positions is not None:
-    #         assert count == positions.shape[0]
-    #         for i in range(count):
-    #             self.signal_values[signal_ids[i]: signal_ids[i] + self.length] = positions[i]
-    #     if colors is not None:
-    #         assert count == colors.shape[0]
-    #         for i in range(count):
-    #             self.signal_colors[signal_ids[i]: signal_ids[i] + self.length] = colors[i]
-    #     self._update_program_data()
     def on_draw(self, _):
         gloo.clear(color=True)
         self.program.draw('line_strip')
@@ -178,54 +137,18 @@ class SimpleCanvas(app.Canvas):
         gloo.set_viewport(0, 0, *event.physical_size)
 
 
-def create_simple_canvas(data, length, title):
-    c = SimpleCanvas(1, cn.SENSOR_COUNT, length, title=title)
+def create_simple_canvas(data, length, title, standalone):
+    simple_canvas = SignalGridCanvas(1, cn.SENSOR_COUNT, length, title=title, show=standalone)
 
-    signal_ids = [c.add_new_signals(0, i) for i in range(cn.SENSOR_COUNT)]
+    signal_ids = [simple_canvas.add_new_signals(0, i) for i in range(cn.SENSOR_COUNT)]
     for i in range(cn.SENSOR_COUNT):
-        c.set_signal_single_color(signal_ids[i][0], cn.COLORS.RED)
-        c.set_signal_single_color(signal_ids[i][1], cn.COLORS.GREEN)
-        c.set_signal_single_color(signal_ids[i][2], cn.COLORS.BLUE)
+        simple_canvas.set_signal_single_color(signal_ids[i][0], cn.COLORS.RED)
+        simple_canvas.set_signal_single_color(signal_ids[i][1], cn.COLORS.GREEN)
+        simple_canvas.set_signal_single_color(signal_ids[i][2], cn.COLORS.BLUE)
 
         for j in range(3):
-            c.roll_signal_values(
-                        signal_ids[i][j],
-                        data[:, i, j])
+            simple_canvas.roll_signal_values(
+                signal_ids[i][j],
+                data[:, i, j])
 
-    return c
-
-
-if __name__ == '__main__':
-    # Running the code below shows examples of using the SignalCanvas
-    c = SimpleCanvas(3, 3, length=1000)
-
-    o1 = c.add_new_signal(2, 2)
-    o2 = c.add_new_signal(1, 1)
-    o3 = c.add_new_signal(1, 1)
-
-    o4 = c.add_new_signals(2, 0)
-    c.set_signal_single_color(o4[0], (1., 0., 0.))
-    c.set_signal_single_color(o4[1], (0., 1., 0.))
-    c.set_signal_single_color(o4[2], (0., 0., 1.))
-
-    o5 = c.add_new_signals(0, 2)
-    c.set_signal_single_color(o5[0], (1., 0., 0.5))
-    c.set_signal_single_color(o5[1], (0.5, 1., 0.))
-    c.set_signal_single_color(o5[2], (0., 0.5, 1.))
-
-    c.set_signal_single_color(o3, (1., 0., 0.))
-
-    def update(_):
-        c.set_signal_values(o1, np.random.rand(1000))
-        c.set_signal_values(o2, np.concatenate([np.random.rand(500), np.repeat(1, 500)]))
-        c.set_signal_values(o3, np.concatenate([np.random.rand(500), np.repeat(1, 500)]))
-
-        # c.set_signal_data_multi(o4, positions=np.random.rand(3, 1000))
-        # c.roll_signal_data_multi(o5, positions=np.random.rand(3, 1))
-
-
-    timer = app.Timer()
-    timer.connect(update)
-    timer.start()
-
-    app.run()
+    return simple_canvas

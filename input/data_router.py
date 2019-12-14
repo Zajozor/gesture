@@ -8,9 +8,9 @@ from vispy import app
 from input.serial_port_parser import SerialPortParser
 import time
 import constants as cn
-from processing.consumer_mixin import ConsumerMixin
-from processing.recording_consumer import RecordingConsumer
-from processing.simple_canvas_consumer import SimpleCanvasConsumer, CellContentTriple
+from processing.consumers.consumer_mixin import ConsumerMixin
+from processing.consumers.recording_consumer import RecordingConsumer
+from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple
 
 from utils import logger
 
@@ -71,20 +71,20 @@ class DataRouter:
             consumer.receive_data(data, data_changed)
 
 
-# if __name__ == '__main__':
-#     QApplication([])
-#     canvas_consumer = SimpleCanvasConsumer(cell_contents=(
-#         CellContentTriple(0, 0, 0), CellContentTriple(0, 1, 1), CellContentTriple(0, 2, 2),
-#         CellContentTriple(0, 3, 3), CellContentTriple(0, 4, 4),
-#     ), rows=1, cols=5, length=100)
-#
-#     recording_consumer = RecordingConsumer()
-#
-#     spp = SerialPortParser('/dev/ttys002')
-#     spp.start(threaded=True)
-#
-#     dr = DataRouter(serial_port_parser_instance=spp, enable_count_logs=True)
-#     dr.start(threaded=True)
-#     dr.add_consumer(canvas_consumer)
-#     dr.add_consumer(recording_consumer)
-#     app.run()
+if __name__ == '__main__':
+    QApplication([])
+    canvas_consumer = SignalGridCanvasConsumer(cell_contents=(
+        CellContentTriple(0, 0, 0), CellContentTriple(0, 1, 1), CellContentTriple(0, 2, 2),
+        CellContentTriple(0, 3, 3), CellContentTriple(0, 4, 4),
+    ), rows=1, cols=5, length=100, show=True)
+
+    recording_consumer = RecordingConsumer()
+
+    spp = SerialPortParser('/dev/ttys006')
+    spp.start(threaded=True)
+
+    dr = DataRouter(serial_port_parser_instance=spp, enable_count_logs=True)
+    dr.start(threaded=True)
+    dr.add_consumer(canvas_consumer)
+    dr.add_consumer(recording_consumer)
+    app.run()

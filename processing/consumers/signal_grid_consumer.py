@@ -1,10 +1,10 @@
-from typing import List, Tuple, Union
+from typing import List, Tuple
 import constants as cn
 import numpy as np
 from vispy import app
 
-from graphics.simple_canvas import SimpleCanvas
-from processing.consumer_mixin import ConsumerMixin
+from graphics.widgets.signal_grid_canvas import SignalGridCanvas
+from processing.consumers.consumer_mixin import ConsumerMixin
 
 
 class CellContent:
@@ -21,7 +21,7 @@ class CellContentTriple(CellContent):
         self.signal_ids = None
 
 
-class SimpleCanvasConsumer(SimpleCanvas, ConsumerMixin):
+class SignalGridCanvasConsumer(SignalGridCanvas, ConsumerMixin):
     def __init__(self, cell_contents: Tuple[CellContent, ...], *args, **kwargs):
         """
 
@@ -43,14 +43,14 @@ class SimpleCanvasConsumer(SimpleCanvas, ConsumerMixin):
                         list(zip(cell.signal_ids, np.reshape(data[cell.input_id], (3, 1))))
                     )
             else:
-                raise NotImplementedError("Other than triples not supported yet")
+                raise NotImplementedError("Other data formats than triples not supported yet")
 
 
 if __name__ == '__main__':
-    c = SimpleCanvasConsumer(cell_contents=(
+    c = SignalGridCanvasConsumer(cell_contents=(
         CellContentTriple(0, 0, 0), CellContentTriple(0, 1, 1), CellContentTriple(0, 2, 2),
         CellContentTriple(0, 3, 3), CellContentTriple(0, 4, 4),
         CellContentTriple(1, 1, 1),
 
-    ), rows=2, cols=5, length=100)
+    ), rows=2, cols=5, length=100, show=True)
     app.run()

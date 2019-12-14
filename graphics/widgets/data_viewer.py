@@ -1,18 +1,20 @@
+import os
+
 import numpy as np
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QListWidget, QApplication
-import os
+
 import constants as cn
-from graphics.simple_canvas import create_simple_canvas
+from graphics.widgets.signal_grid_canvas import create_simple_canvas
 
 
-class DataViewer:
-    def __init__(self):
-        self.window = QWidget()
+class DataViewer(QWidget):
+    def __init__(self, show=False, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         layout = QVBoxLayout()
 
-        self.refresh_button = QPushButton('Refresh')
-        layout.addWidget(self.refresh_button)
-        self.refresh_button.clicked.connect(self.refresh_list)
+        refresh_button = QPushButton('Refresh')
+        refresh_button.clicked.connect(self.refresh_list)
+        layout.addWidget(refresh_button)
 
         self.show_button = QPushButton('Show')
         layout.addWidget(self.show_button)
@@ -24,8 +26,10 @@ class DataViewer:
         self.refresh_list()
         self.gesture_list.setCurrentRow(0)
 
-        self.window.setLayout(layout)
-        self.window.show()
+        self.setLayout(layout)
+        if show:
+
+            self.window().show()
 
         self.shown_canvases = []
 
@@ -43,5 +47,5 @@ class DataViewer:
 
 if __name__ == '__main__':
     app = QApplication([])
-    d = DataViewer()
+    d = DataViewer(show=True)
     app.exec_()
