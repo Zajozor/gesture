@@ -54,4 +54,3 @@ ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(GESTURE_NAME_
                             for name in GESTURES}
 NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_')
                             for name in GESTURES}
-
