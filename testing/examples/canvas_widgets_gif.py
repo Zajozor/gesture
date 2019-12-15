@@ -5,6 +5,7 @@ from PyQt5.QtGui import QMovie
 from PyQt5.QtWidgets import QWidget, QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QLabel, QFrame
 from vispy import app, gloo
 
+import constants as cn
 from graphics.widgets.signal_grid_canvas import SignalGridCanvas
 
 if __name__ == '__main__':
@@ -108,7 +109,7 @@ if __name__ == '__main__':
     c3 = TextCanvas()
     horiz.addWidget(c3.native)
 
-    mv = QMovie('../../models/render/15.peace.gif')
+    mv = QMovie(str(cn.MODELS_FOLDER / '15.peace.gif'))
     label = QLabel()
     label.setMovie(mv)
     label.setScaledContents(True)

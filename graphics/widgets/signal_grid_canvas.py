@@ -9,7 +9,7 @@ from graphics.shaders.grid_lines import VERTEX_SHADER, FRAGMENT_SHADER
 
 class SignalGridCanvas(app.Canvas):
     def __init__(self, rows: int = 1, cols: int = 1, length: int = 200,
-                 program: gloo.Program = None, show=False, *args, **kwargs):
+                 program: gloo.Program = None, *args, **kwargs):
         """
         Creates a canvas that displays multiple signals in a grid.
         :param rows: Row count in the grid.
@@ -38,8 +38,6 @@ class SignalGridCanvas(app.Canvas):
         self.program['u_n'] = length
 
         self._timer: app.Timer = app.Timer('auto', connect=self.on_timer, start=True)
-        if show:
-            self.show()
 
     def _update_program_indices(self):
         """

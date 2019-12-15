@@ -1,3 +1,5 @@
+from pathlib import Path
+
 DATA_NORMALIZATION_COEFFICIENT = 5
 
 SENSOR_DATA_PREFIXES = ('aworld', 'ypr', 'areal')
@@ -17,4 +19,39 @@ class COLORS:
 
 DEFAULT_WINDOW_SIZE = (800, 150)
 
-DATA_FOLDER = 'data/gestures'
+BASE_DIR = Path(__file__).parent.absolute()
+DATA_FOLDER = BASE_DIR / 'data/gestures'
+MODELS_FOLDER = BASE_DIR / 'models/render'
+GESTURE_PREFIX = 'g'
+GESTURE_NAME_SEPARATOR = '-'
+GESTURE_NAME_TYPE_INDEX = 1
+TRASH_GESTURE_INDEX = -1
+
+GESTURES = [
+    '01 Index swipe left',
+    '02 Index swipe right',
+    '03 Two finger swipe left',
+    '04 Two finger swipe right',
+    '05 Hand swipe left',
+    '06 Hand swipe right',
+    '07 Pinch closer',
+    '08 Pinch away',
+    '09 Thumb double tap',
+    '10 Grab',
+    '11 Ungrab',
+    '12 Push',
+    '13 Raise up',
+    '14 Cover down',
+    '15 Peace',
+    '16 Phone',
+    '17 Metal',
+    '18 Shoot',
+    '19 Passive',
+    '20 Trash',
+]
+
+ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_'): name
+                            for name in GESTURES}
+NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_')
+                            for name in GESTURES}
+

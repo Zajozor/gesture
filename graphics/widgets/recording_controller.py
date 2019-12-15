@@ -1,8 +1,11 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QListWidget
 
+import constants as cn
+
 
 class RecordingController:
     def __init__(self, start_callback, stop_callback):
+        # TODO make into widget
         self.window = QWidget()
         layout = QVBoxLayout()
 
@@ -24,39 +27,7 @@ class RecordingController:
         self.save_checkbox.setChecked(True)
 
         self.gesture_choice = QListWidget()
-        self.gesture_choice.addItems([
-            'Index swipe left',
-            'Index swipe right',
-            'Two finger swipe left',
-            'Two-finger swipe right',
-            'Hand swipe left',
-            'Hand swipe right',
-            'Pinch closer',
-            'Pinch away',
-            'Thumb double tap',
-            'Grab',
-            'Un-grab',
-            'Push',
-            'Raise up',
-            'Cover down',
-            'Peace',
-            'Phone',
-            'Metal',
-            'Shoot',
-            # 'Index',
-            # 'Middle',
-            # 'Grab',
-            # 'Wave away',
-            # 'Wave in',
-            'Passive',
-            # 'Wave up',
-            # 'Grab in',
-            # 'Grab out',
-            # 'Circle Positive',
-            # 'Pinch out',
-            # 'Pinch in',
-            'Trash',
-        ])
+        self.gesture_choice.addItems(cn.GESTURES)
         layout.addWidget(self.gesture_choice)
         self.gesture_choice.setCurrentRow(0)
 
