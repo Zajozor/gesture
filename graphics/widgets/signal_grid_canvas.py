@@ -1,7 +1,9 @@
 from typing import Tuple, List
 
 import numpy as np
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout
 from vispy import app, gloo
+from vispy.visuals import transforms, LineVisual
 
 import constants as cn
 from graphics.shaders.grid_lines import VERTEX_SHADER, FRAGMENT_SHADER
@@ -9,7 +11,7 @@ from graphics.shaders.grid_lines import VERTEX_SHADER, FRAGMENT_SHADER
 
 class SignalGridCanvas(app.Canvas):
     def __init__(self, rows: int = 1, cols: int = 1, length: int = 200,
-                 program: gloo.Program = None, *args, **kwargs):
+                 program: gloo.Program = None, show_grid=True, *args, **kwargs):
         """
         Creates a canvas that displays multiple signals in a grid.
         :param rows: Row count in the grid.
@@ -17,8 +19,7 @@ class SignalGridCanvas(app.Canvas):
         :param length: Length of a single sequence.
         :param program: The gloo program being used.
         """
-
-        app.Canvas.__init__(self, *args, size=cn.DEFAULT_WINDOW_SIZE, **kwargs)
+        super().__init__(*args, size=cn.DEFAULT_WINDOW_SIZE, **kwargs)
         gloo.set_clear_color((1, 1, 1, 1))
         gloo.set_viewport(0, 0, *self.physical_size)
 
@@ -38,6 +39,18 @@ class SignalGridCanvas(app.Canvas):
         self.program['u_n'] = length
 
         self._timer: app.Timer = app.Timer('auto', connect=self.on_timer, start=True)
+
+        self.visuals = []
+
+        if show_grid:
+            # noinspection PyTypeChecker
+            self.visuals += [
+                                LineVisual(np.array([[0, (i + 1) / rows], [1, (i + 1) / rows]]))
+                                for i in range(rows - 1)
+                            ] + [
+                                LineVisual(np.array([[(i + 1) / cols, 0], [(i + 1) / cols, 1]]))
+                                for i in range(cols - 1)
+                            ]
 
     def _update_program_indices(self):
         """
@@ -128,26 +141,73 @@ class SignalGridCanvas(app.Canvas):
     def on_draw(self, _):
         gloo.clear(color=True)
         self.program.draw('line_strip')
+        for visual in self.visuals:
+            visual.draw()
 
     def on_timer(self, _):
         self.update()
 
     def on_resize(self, event):
         gloo.set_viewport(0, 0, *event.physical_size)
+        vp = (0, 0, self.physical_size[0], self.physical_size[1])
+        self.context.set_viewport(*vp)
+        for visual in self.visuals:
+            visual.transform = transforms.STTransform(scale=(vp[2], vp[3], 1.))
+            visual.transforms.configure(canvas=self, viewport=vp)
+
+    @staticmethod
+    def canvas_from_data(data: np.ndarray, length=None, title=None, rows=1, cols=None):
+        """
+        Creates a canvas from the given data. Suitable for one-off canvas creation.
+        :param data: A numpy array, [length, sensor_count, colors]
+        :param length: Length - if not specified is calculated from the received data.
+        :param title: Title of the window (applicable if shown).
+        :param rows: Amount of rows in the canvas.
+        :param cols: Amount of columns in the canvas.
+        :return: canvas itself
+        """
+        assert len(data.shape) == 3
+        if length is None:
+            length = data.shape[0]
+        if cols is None:
+            cols = data.shape[1]
+        assert data.shape[2] == 3  # Three different colors
+
+        canvas = SignalGridCanvas(rows, cols, length, title=title)
+
+        for i in range(cols):
+            signal_id = canvas.add_new_signals(0, i)
+            for j in range(3):
+                canvas.set_signal_single_color(signal_id[j], cn.COLORS.DEFAULT_SIGNAL_COLORS[j])
+                canvas.roll_signal_values(signal_id[j], data[:, i, j])
+
+        return canvas
 
 
-def create_simple_canvas(data, length, title, standalone):
-    simple_canvas = SignalGridCanvas(1, cn.SENSOR_COUNT, length, title=title, show=standalone)
+if __name__ == '__main__':
+    q_app = QApplication([])
 
-    signal_ids = [simple_canvas.add_new_signals(0, i) for i in range(cn.SENSOR_COUNT)]
-    for i in range(cn.SENSOR_COUNT):
-        simple_canvas.set_signal_single_color(signal_ids[i][0], cn.COLORS.RED)
-        simple_canvas.set_signal_single_color(signal_ids[i][1], cn.COLORS.GREEN)
-        simple_canvas.set_signal_single_color(signal_ids[i][2], cn.COLORS.BLUE)
+    win = QWidget()
+    layout = QHBoxLayout()
+    win.setLayout(layout)
 
-        for j in range(3):
-            simple_canvas.roll_signal_values(
-                signal_ids[i][j],
-                data[:, i, j])
+    c1 = SignalGridCanvas(3, 3, 100)
+    s1 = c1.add_new_signal(0, 1)
+    c1.set_signal_values(s1, np.random.rand(100))
 
-    return simple_canvas
+    s2 = c1.add_new_signal(1, 1)
+    c1.set_signal_values(s2, np.tile(0.3, 100))
+    c1.set_signal_single_color(s2, (0.9, 0.2, 0.3))
+    layout.addWidget(c1.native)
+
+    c2 = SignalGridCanvas(3, 1, 50)
+    s3 = c2.add_new_signals(1, 0)
+    c2.set_signal_single_color(s3[1], (0, 1, 0))
+    c2.roll_signal_values_multi([s, np.random.rand(50)] for s in s3)
+    layout.addWidget(c2.native)
+
+    c3 = SignalGridCanvas.canvas_from_data(np.random.rand(300, 5, 3))
+    layout.addWidget(c3.native)
+
+    win.show()
+    q_app.exec_()
