@@ -1,5 +1,6 @@
-from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QApplication, QLabel
+
+import constants as cn
 
 
 class ClosableExtension(QWidget):
@@ -10,7 +11,7 @@ class ClosableExtension(QWidget):
         self.setLayout(main_layout)
 
         close_button = QPushButton('❌')
-        close_button.setFont(QFont('Dejavu Sans', 24))
+        close_button.setFont(cn.EMOJI_FONT)
         close_button.setFixedSize(50, 50)
 
         close_button.clicked.connect(self.close)

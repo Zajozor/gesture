@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from PyQt5.QtGui import QFont
+
 DATA_NORMALIZATION_COEFFICIENT = 5
 
 SENSOR_DATA_PREFIXES = ('aworld', 'ypr', 'areal')
@@ -15,6 +17,8 @@ class COLORS:
     RED = (1., 0., 0.)
     GREEN = (0., 1., 0.)
     BLUE = (0., 0., 1.)
+
+    DEFAULT_SIGNAL_COLORS = [RED, GREEN, BLUE]
 
 
 DEFAULT_WINDOW_SIZE = (800, 150)
@@ -54,3 +58,5 @@ ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(GESTURE_NAME_
                             for name in GESTURES}
 NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_')
                             for name in GESTURES}
+
+EMOJI_FONT = QFont('Dejavu Sans', 24)

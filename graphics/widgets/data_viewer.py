@@ -11,6 +11,7 @@ from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
 from graphics.widgets.renamer import Renamer
 from graphics.widgets.signal_grid_canvas import create_simple_canvas
+from utils import logger
 
 
 class DataViewer(QWidget):
@@ -53,7 +54,7 @@ class DataViewer(QWidget):
         for gesture in gestures:
             parts = gesture.split(cn.GESTURE_NAME_SEPARATOR)
             if len(parts) < 3 or parts[0] != cn.GESTURE_PREFIX:
-                print(f'Leaving out file {gesture}, unknown naming.')
+                logger.debug(f'Leaving out file {gesture}, unknown naming.')
                 continue
 
             if parts[1] in cn.ESCAPED_TO_NICE_GESTURES:
