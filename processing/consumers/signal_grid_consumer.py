@@ -1,8 +1,6 @@
 from typing import List, Tuple
 
 import numpy as np
-from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout
-from vispy import app
 
 import constants as cn
 from graphics.widgets.signal_grid_canvas import SignalGridCanvas

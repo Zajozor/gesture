@@ -47,13 +47,10 @@ class SignalGridCanvas(app.Canvas):
         self.show_grid = show_grid
         if self.show_grid:
             # noinspection PyTypeChecker
-            self.visuals += [
-                                LineVisual(np.array([[0, (i + 1) / rows], [1, (i + 1) / rows]]))
-                                for i in range(rows - 1)
-                            ] + [
-                                LineVisual(np.array([[(i + 1) / cols, 0], [(i + 1) / cols, 1]]))
-                                for i in range(cols - 1)
-                            ]
+            self.visuals += [LineVisual(np.array([[0, (i + 1) / rows], [1, (i + 1) / rows]]))
+                             for i in range(rows - 1)] +\
+                            [LineVisual(np.array([[(i + 1) / cols, 0], [(i + 1) / cols, 1]]))
+                             for i in range(cols - 1)]
 
     def _update_program_indices(self):
         """

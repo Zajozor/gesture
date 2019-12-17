@@ -29,7 +29,7 @@ amplitudes = .1 + .2 * np.random.rand(m, 1).astype(np.float32)
 # Generate the signals as a (m, n) array.
 y = amplitudes * np.random.randn(m, n).astype(np.float32)
 
-# Color of each vertex (TODO: make it more efficient by using a GLSL-based
+# Color of each vertex (
 # color map and the index).
 color = np.repeat(np.random.uniform(size=(m, 3), low=.5, high=.9),
                   n, axis=0).astype(np.float32)

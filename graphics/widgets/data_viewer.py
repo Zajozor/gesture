@@ -102,7 +102,9 @@ class DataViewer(QWidget):
             ClosableExtension(
                 NamedExtension(filename,
                                SignalGridCanvas.from_data(data, title=filename).native
-        )))
+                               )
+            )
+        )
 
     def gesture_context_menu(self, point):
         model_index = self.gesture_tree_view.indexAt(point)
