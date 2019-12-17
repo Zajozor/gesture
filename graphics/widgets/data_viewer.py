@@ -10,7 +10,7 @@ import constants as cn
 from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
 from graphics.widgets.renamer import Renamer
-from graphics.widgets.signal_grid_canvas import create_simple_canvas
+from graphics.widgets.signal_grid_canvas import SignalGridCanvas
 from utils import logger
 
 
@@ -101,7 +101,8 @@ class DataViewer(QWidget):
         self.display_column.addWidget(
             ClosableExtension(
                 NamedExtension(filename,
-                               create_simple_canvas(data, data.shape[0], filename, False).native)))
+                               SignalGridCanvas.from_data(data, title=filename).native
+        )))
 
     def gesture_context_menu(self, point):
         model_index = self.gesture_tree_view.indexAt(point)

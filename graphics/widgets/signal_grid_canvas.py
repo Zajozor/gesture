@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, Iterator
 
 import numpy as np
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout
@@ -22,6 +22,7 @@ class SignalGridCanvas(app.Canvas):
         super().__init__(*args, size=cn.DEFAULT_WINDOW_SIZE, **kwargs)
         gloo.set_clear_color((1, 1, 1, 1))
         gloo.set_viewport(0, 0, *self.physical_size)
+        self.native.setMinimumSize(300, 150)
 
         self.rows: int = rows
         self.cols: int = cols
@@ -41,8 +42,10 @@ class SignalGridCanvas(app.Canvas):
         self._timer: app.Timer = app.Timer('auto', connect=self.on_timer, start=True)
 
         self.visuals = []
+        self.connect(self.on_close)
 
-        if show_grid:
+        self.show_grid = show_grid
+        if self.show_grid:
             # noinspection PyTypeChecker
             self.visuals += [
                                 LineVisual(np.array([[0, (i + 1) / rows], [1, (i + 1) / rows]]))
@@ -132,7 +135,7 @@ class SignalGridCanvas(app.Canvas):
         ])
         self._update_program_values()
 
-    def roll_signal_values_multi(self, signals: List[Tuple[int, np.ndarray]]):
+    def roll_signal_values_multi(self, signals: Iterator[Tuple[int, np.ndarray]]):
         for signal_id, values in signals:
             self.roll_signal_values(signal_id, values)
 
@@ -147,6 +150,9 @@ class SignalGridCanvas(app.Canvas):
     def on_timer(self, _):
         self.update()
 
+    def on_close(self):
+        self._timer.stop()
+
     def on_resize(self, event):
         gloo.set_viewport(0, 0, *event.physical_size)
         vp = (0, 0, self.physical_size[0], self.physical_size[1])
@@ -156,7 +162,7 @@ class SignalGridCanvas(app.Canvas):
             visual.transforms.configure(canvas=self, viewport=vp)
 
     @staticmethod
-    def canvas_from_data(data: np.ndarray, length=None, title=None, rows=1, cols=None):
+    def from_data(data: np.ndarray, length=None, title=None, rows=1, cols=None):
         """
         Creates a canvas from the given data. Suitable for one-off canvas creation.
         :param data: A numpy array, [length, sensor_count, colors]
@@ -183,6 +189,23 @@ class SignalGridCanvas(app.Canvas):
 
         return canvas
 
+    @staticmethod
+    def from_canvas(other_canvas: 'SignalGridCanvas'):
+        """
+        Caution, this copies only most of the sensible properties
+        :param other_canvas: Other SignalGridCanvas to make copy of
+        :return: New SignalGridCanvas
+        """
+        new_canvas = SignalGridCanvas(other_canvas.rows,
+                                      other_canvas.cols,
+                                      other_canvas.length,
+                                      show_grid=other_canvas.show_grid)
+        new_canvas.signal_values = other_canvas.signal_values
+        new_canvas.signal_colors = other_canvas.signal_colors
+        new_canvas.row_col_time_indices = other_canvas.row_col_time_indices
+        new_canvas._update_program()
+        return new_canvas
+
 
 if __name__ == '__main__':
     q_app = QApplication([])
@@ -203,11 +226,14 @@ if __name__ == '__main__':
     c2 = SignalGridCanvas(3, 1, 50)
     s3 = c2.add_new_signals(1, 0)
     c2.set_signal_single_color(s3[1], (0, 1, 0))
-    c2.roll_signal_values_multi([s, np.random.rand(50)] for s in s3)
+    c2.roll_signal_values_multi([s, np.random.rand(50) * 2 - 1] for s in s3)
     layout.addWidget(c2.native)
 
-    c3 = SignalGridCanvas.canvas_from_data(np.random.rand(300, 5, 3))
+    c3 = SignalGridCanvas.from_data(np.random.rand(15, 5, 3) * 2 - 1)
     layout.addWidget(c3.native)
+
+    c4 = SignalGridCanvas.from_canvas(c2)
+    layout.addWidget(c4.native)
 
     win.show()
     q_app.exec_()
