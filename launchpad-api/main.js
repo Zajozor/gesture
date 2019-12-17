@@ -28,6 +28,10 @@ rl.on('line', input => {
         console.log(JSON.stringify({event: 'confirm', command}))
         pad.col(pad[command.color], [command.x, command.y])
     }
+    if (command.event === 'reset') {
+        console.log(JSON.stringify({event: 'confirm', command}))
+        pad.reset()
+    }
 })
 
 /*

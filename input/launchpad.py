@@ -24,9 +24,14 @@ class LaunchpadAPI:
         yellow = 'yellow'
 
     def set_color(self, x: int, y: int, color: str):
-        self.process.stdin.write(
-            json.dumps({'event': 'col', 'x': x, 'y': y, 'color': color}).encode() + '\n'.encode()
-        )
+        self._send_command({'event': 'col', 'x': x, 'y': y, 'color': color})
+
+    def reset(self):
+        self._send_command({'event': 'reset'})
+
+    def _send_command(self, command):
+        self.process.stdin.write(json.dumps(command).encode())
+        self.process.stdin.write('\n'.encode())
         self.process.stdin.flush()
 
     def stdout_read_loop(self):
@@ -52,6 +57,9 @@ if __name__ == '__main__':
         if 'event' in data and data['event'] == 'key':
             if (0, 0) == (data['x'], data['y']):
                 lapi.close()
+            if (1, 1) == (data['x'], data['y']):
+                lapi.reset()
+
             lapi.set_color(data['x'] + 1, data['y'] + 1, 'yellow')
 
 
