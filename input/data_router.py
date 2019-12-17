@@ -3,20 +3,18 @@ from threading import Thread
 from typing import List, Union
 
 import numpy as np
-from PyQt5.QtWidgets import QApplication
-from vispy import app
 
 import constants as cn
 from input.serial_port_parser import SerialPortParser
 from processing.consumers.consumer_mixin import ConsumerMixin
-from processing.consumers.recording_consumer import RecordingConsumer
-from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple
 from utils import logger
 
 
 class DataRouter:
     """
     DataRouter is an intermediary between a serial port parser and some data consumers.
+    It is initialized with a SerialPortParser instance and then consumers are added to it.
+    Each of these consumers then receives data through the consumer interface.
     """
 
     def __init__(self,
@@ -50,9 +48,10 @@ class DataRouter:
                             self.update_counts[sensor_id] += 1
 
                     current_time = time.time()
-                    if current_time - self.last_update > 1:
+                    if current_time - self.last_update > cn.SENSOR_UPDATE_LOG_FREQUENCY:
                         self.last_update = current_time
-                        logger.info(f'Update counts: {self.update_counts}, total: {sum(self.update_counts)}')
+                        logger.info(f'Update counts after {cn.SENSOR_UPDATE_LOG_FREQUENCY}s: '
+                                    f'{self.update_counts}, Σ: {sum(self.update_counts)}')
                         self.update_counts = [0] * cn.SENSOR_COUNT
 
                 self.route_data(data, data_changed)
@@ -69,22 +68,3 @@ class DataRouter:
     def route_data(self, data: np.ndarray, data_changed: List[bool]):
         for consumer in self._consumers:
             consumer.receive_data(data, data_changed)
-
-
-if __name__ == '__main__':
-    QApplication([])
-    canvas_consumer = SignalGridCanvasConsumer(cell_contents=(
-        CellContentTriple(0, 0, 0), CellContentTriple(0, 1, 1), CellContentTriple(0, 2, 2),
-        CellContentTriple(0, 3, 3), CellContentTriple(0, 4, 4),
-    ), rows=1, cols=5, length=100, show=True)
-
-    recording_consumer = RecordingConsumer()
-
-    spp = SerialPortParser('/dev/ttys006')
-    spp.start(threaded=True)
-
-    dr = DataRouter(serial_port_parser_instance=spp, enable_count_logs=True)
-    dr.start(threaded=True)
-    dr.add_consumer(canvas_consumer)
-    dr.add_consumer(recording_consumer)
-    app.run()

@@ -21,7 +21,7 @@ class SerialPortParser:
     Output: Data in a buffer
     """
 
-    def __init__(self, serial_port_name: str = cn.SERIAL_PORT_NAME, verbose: bool = False):
+    def __init__(self, serial_port_name, verbose: bool = False):
         self.serial_port_name: str = serial_port_name
         self.serial_port: Union[serial.Serial, None] = None
 
