@@ -5,7 +5,7 @@ const Launchpad = require( 'launchpad-mini' ),
         input: process.stdin
     })
 
-pad.connect().then( () => {
+pad.connect().then(() => {
     console.log(JSON.stringify({event: 'connected'}))
     pad.reset()
     pad.brightness(1)
@@ -13,17 +13,21 @@ pad.connect().then( () => {
     pad.on( 'key', ({x, y, pressed}) => {
         console.log(JSON.stringify({event: 'key', x, y, pressed}))
         // Make button red while pressed, green after pressing
-        pad.col( pressed ? pad.red : pad.red.off, [x, y] );
-    } );
-
-
-} );
+        pad.col( pressed ? pad.red : pad.red.off, [x, y])
+    })
+})
 
 
 rl.on('line', input => {
     const command = JSON.parse(input)
-    if (command.event === 'col')
+    if (command.event === 'col') {
+        if (command.x < 0 || command.x > 8 || command.y < 0 || command.y > 8 || command.x + command.y >= 16) {
+            console.log(JSON.stringify({event: 'invalid', command}))
+            return
+        }
+        console.log(JSON.stringify({event: 'confirm', command}))
         pad.col(pad[command.color], [command.x, command.y])
+    }
 })
 
 /*
