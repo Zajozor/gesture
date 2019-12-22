@@ -100,14 +100,6 @@ version = "3.4"
 
 [[package]]
 category = "main"
-description = "A wrapper for subprocess which provides command pipeline functionality."
-name = "sarge"
-optional = false
-python-versions = "*"
-version = "0.1.5.post0"
-
-[[package]]
-category = "main"
 description = "Interactive visualization in Python"
 name = "vispy"
 optional = false
@@ -132,7 +124,7 @@ sdl2 = ["pysdl2"]
 wx = ["wxpython"]
 
 [metadata]
-content-hash = "4d9bb7baafd312cbd553317b4b4d8a34299a2f2700db824bed3f4c9b3e4747a9"
+content-hash = "9f5bb15229fd36f8be59e20988ed369ebccf57a2241e10f55e1b315a09de8873"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -219,9 +211,6 @@ pyqt5-stubs = [
 pyserial = [
     {file = "pyserial-3.4-py2.py3-none-any.whl", hash = "sha256:e0770fadba80c31013896c7e6ef703f72e7834965954a78e71a3049488d4d7d8"},
     {file = "pyserial-3.4.tar.gz", hash = "sha256:6e2d401fdee0eab996cf734e67773a0143b932772ca8b42451440cfed942c627"},
-]
-sarge = [
-    {file = "sarge-0.1.5.post0.tar.gz", hash = "sha256:da8cc90883f8e5ab4af0d746438f608662f5f2a35da2e858517927edefa134b0"},
 ]
 vispy = [
     {file = "vispy-0.6.3-cp35-cp35m-macosx_10_6_intel.whl", hash = "sha256:357243a56e5f87bf8f866923ba2fc7b82a20f52ae01a8dc727063919b98224c4"},

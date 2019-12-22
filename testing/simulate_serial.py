@@ -7,8 +7,7 @@ import os
 import threading
 import time
 from random import randint
-
-from sarge import Capture, run
+from subprocess import Popen, PIPE
 
 import constants as cn
 from utils import logger
@@ -32,12 +31,9 @@ def generate_data():
 
 
 def start_ttys():
-    p = run('socat -d -d pty,raw,echo=0 pty,raw,echo=0', stderr=Capture(), async_=True)
-    time.sleep(0.05)  # Wait for output to be available
-    lines = p.stderr.text.split('\n')
-    assert len(lines) == 4
-    _left = lines[0].split(' ')[-1]
-    _right = lines[1].split(' ')[-1]
+    p = Popen(['socat', '-d', '-d', 'pty,raw,echo=0', 'pty,raw,echo=0'], stderr=PIPE)
+    _left = p.stderr.readline().decode().split(' ')[-1]
+    _right = p.stderr.readline().decode().split(' ')[-1]
     return _left, _right
 
 

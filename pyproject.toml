@@ -7,7 +7,6 @@ authors = ["zajozor <github@zajo.io>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 numpy = "^1.17.4"
-sarge = "^0.1.5"
 pyqt5 = "^5.13.1"
 vispy = "^0.6.3"
 pyserial = "^3.4"
