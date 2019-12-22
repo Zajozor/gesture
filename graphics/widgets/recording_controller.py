@@ -4,8 +4,9 @@ from typing import Union
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QKeyEvent
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QListWidget, QHBoxLayout, QLabel, QLineEdit
+from PyQt5.QtGui import QKeyEvent, QMovie
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QListWidget, QHBoxLayout, QLabel, QLineEdit, \
+    QFrame
 from vispy import app
 
 import constants as cn
@@ -32,11 +33,13 @@ class RecordingController(QWidget):
         self.user_name_edit = QLineEdit('user')
         self.user_meta_edit = QLineEdit('')
         self.gesture_filename_label = QLabel('')
+        self.instruction_gif_label = QLabel('')
 
         # Used in the final gesture filename, set when recording starts
         self.gesture_record_time: Union[str, None] = None
 
         self.display_column_layout = QVBoxLayout()
+
         self.instruction_column_layout = QVBoxLayout()
         self.setLayout(self._setup_main_layout())
         self.update_shown_gesture_filename()
@@ -130,8 +133,27 @@ class RecordingController(QWidget):
         return session_layout
 
     def _setup_instruction_layout(self):
-        # TODO display gifs..
-        self.instruction_column_layout.addWidget(QLabel('tmp'))
+        self.instruction_column_layout.addWidget(self.instruction_gif_label)
+
+        def update_shown_gif(new_gesture):
+            gif_path = cn.MODELS_FOLDER / f'{cn.NICE_TO_ESCAPED_GESTURES[new_gesture]}.gif'
+            if gif_path.exists():
+                movie = QMovie(gif_path.as_posix())
+                movie.start()
+                self.instruction_gif_label.setMovie(movie)
+                self.instruction_gif_label.setText('')
+            else:
+                self.instruction_gif_label.setMovie(None)
+                self.instruction_gif_label.setText(f'Missing gif for "{new_gesture}".')
+
+        # noinspection PyUnresolvedReferences
+        self.gesture_choice.currentTextChanged.connect(update_shown_gif)
+        update_shown_gif(self.gesture_choice.selectedItems()[0].text())
+        self.instruction_gif_label.setScaledContents(True)
+        scale = 0.5
+        self.instruction_gif_label.setFixedSize(960 * scale, 540 * scale)
+        self.instruction_gif_label.setAlignment(Qt.AlignCenter)
+        self.instruction_gif_label.setFrameStyle(QFrame.Panel)
         return self.instruction_column_layout
 
     def _setup_display_layout(self):
