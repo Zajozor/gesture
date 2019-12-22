@@ -60,4 +60,4 @@ ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(GESTURE_NAME_
 NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_')
                             for name in GESTURES}
 
-EMOJI_FONT = QFont('Dejavu Sans', 24)
+EMOJI_FONT = QFont('Menlo', 24)
