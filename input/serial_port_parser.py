@@ -29,12 +29,15 @@ class SerialPortParser:
         self._data_changed: List[bool] = [False] * cn.SENSOR_COUNT
 
         self.verbose: bool = verbose
-        self.active: bool = False
+        self.current_active_state: bool = False
+        self.target_active_state: bool = False
         self.thread: Union[Thread, None] = None
 
     def start(self, threaded):
+        self.target_active_state = True
+
         def run_serial_parsing():
-            while True:  # If the serial drops, try init again and then reading
+            while self.target_active_state:  # If the serial drops, try init again and then reading
                 self.init_serial()
                 self.read_serial()
                 time.sleep(0.1)
@@ -46,7 +49,7 @@ class SerialPortParser:
             run_serial_parsing()
 
     def init_serial(self):
-        while not self.active:
+        while not self.current_active_state and self.target_active_state:
             try:
                 self.serial_port = serial.Serial(port=self.serial_port_name,
                                                  baudrate=cn.SERIAL_PORT_BAUD_RATE,
@@ -55,21 +58,21 @@ class SerialPortParser:
                 self.serial_port.write(b"starting")
                 self.serial_port.readline().rstrip().decode("utf-8")
                 logger.info('Serial port successfully opened.')
-                self.active = True
+                self.current_active_state = True
             except (ValueError, serial.SerialException):
                 logger.warning('Error during serial port init.')
-                self.stop_serial()
+                self.cleanup_serial()
                 time.sleep(0.5)
 
     def read_serial(self):
-        while self.active:
+        while self.current_active_state and self.target_active_state:
             try:
                 data = self.serial_port.readline().rstrip().decode().split()
                 if self.verbose:
                     logger.debug(f'Serial received data: {data}')
             except (AttributeError, UnicodeDecodeError, TypeError, serial.SerialException) as e:
                 logger.warning(f'Serial reading error: {e}')
-                self.stop_serial()
+                self.cleanup_serial()
                 break
             try:
                 sensor_id = int(data[0]) - cn.SENSOR_ID_OFFSET
@@ -80,15 +83,23 @@ class SerialPortParser:
                 # On format errors, we do not restart the serial
                 logger.warning(f'Invalid data received: {data}')
 
-    def stop_serial(self):
-        if self.active:
+    def cleanup_serial(self):
+        if self.current_active_state:
             try:
                 self.serial_port.close()
-            except (serial.SerialException, AttributeError):
+            except (serial.SerialException, OSError, AttributeError):
                 self.serial_port = None
-            self.active = False
+            self.current_active_state = False
 
-    # TODO change serial...
+    def stop_serial(self):
+        self.target_active_state = False
+        self.cleanup_serial()
+
+    def set_serial_port_name(self, new_name):
+        if not self.current_active_state:
+            self.serial_port_name = new_name
+        else:
+            raise RuntimeError('Cannot rename a running serial port!')
 
     @property
     def data(self):
