@@ -46,11 +46,16 @@ class SignalGridCanvas(app.Canvas):
 
         self.show_grid = show_grid
         if self.show_grid:
-            # noinspection PyTypeChecker
-            self.visuals += [LineVisual(np.array([[0, (i + 1) / rows], [1, (i + 1) / rows]]))
-                             for i in range(rows - 1)] +\
-                            [LineVisual(np.array([[(i + 1) / cols, 0], [(i + 1) / cols, 1]]))
-                             for i in range(cols - 1)]
+            for i in range(cols - 1):
+                # noinspection PyTypeChecker
+                self.visuals.append(LineVisual(np.array(
+                            [[(i + 1) / cols, 0], [(i + 1) / cols, 1]]
+                )))
+            for i in range(rows - 1):
+                # noinspection PyTypeChecker
+                self.visuals.append(LineVisual(np.array(
+                    [[0, (i + 1) / rows], [1, (i + 1) / rows]]
+                )))
 
     def _update_program_indices(self):
         """
@@ -155,7 +160,9 @@ class SignalGridCanvas(app.Canvas):
         vp = (0, 0, self.physical_size[0], self.physical_size[1])
         self.context.set_viewport(*vp)
         for visual in self.visuals:
-            visual.transform = transforms.STTransform(scale=(vp[2], vp[3], 1.))
+            # TODO no idea why this scale is needed here rip
+            scale = 1
+            visual.transform = transforms.STTransform(scale=(vp[2] * scale, vp[3] * scale, 1.))
             visual.transforms.configure(canvas=self, viewport=vp)
 
     @staticmethod
