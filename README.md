@@ -3,8 +3,15 @@
 A simple accelerometer-based gesture recognition software.
 Under heavy development.
 
-Project is using pipenv for dependency management.
-For PyQt5, system wide libraries may be required.
+Project is using Conda environment for package management.
+Use
+```bash
+conda env create -f environment.yml
+```
+to create an environment based on the used packages.
+
+The [socat](https://linux.die.net/man/1/socat)
+binary is required for simulation of the device.
 
 - [arduino](arduino) contains code used on the microprocessor
 - [graphics](graphics) contains graphics related stuff

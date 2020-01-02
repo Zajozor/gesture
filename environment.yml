@@ -1,0 +1,14 @@
+name: gesture
+channels:
+  - pypi
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.7
+  - pytorch
+  - torchvision
+  - scikit-learn
+  - pyserial
+  - vispy
+  - flake8
+  - pyqt
