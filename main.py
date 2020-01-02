@@ -1,22 +1,39 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTabWidget
 
-from graphics.widgets.data_viewer import DataViewer
-from graphics.widgets.serial_port_controller import SerialPortController
-from input.data_router import DataRouter
-from input.serial_port_parser import SerialPortParser
-from processing.consumers.recording_consumer import RecordingConsumer
-from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple
+import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
+# We use this to suppress a group of warnings that are a result of outdated libraries
+# available on conda channels.
+
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTabWidget  # noqa: E402
+
+import constants as cn  # noqa: E402
+from graphics.widgets.data_viewer import DataViewer  # noqa: E402
+from graphics.widgets.serial_port_controller import SerialPortController  # noqa: E402
+from input.data_router import DataRouter  # noqa: E402
+from input.serial_port_parser import SerialPortParser  # noqa: E402
+from processing.consumers.recording_consumer import RecordingConsumer  # noqa: E402
+from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple  # noqa: E402
 
 # TODO log handler logging to file for historical purposes. also add debug log messages to various places
 # TODO show raw serial output?
+
 
 if __name__ == '__main__':
     q_app = QApplication([])
 
     win = QTabWidget()
     win.setMinimumSize(1600, 850)
-    layout = QVBoxLayout()
+
+    # Serial port TAB
+    spp = SerialPortParser(cn.SERIAL_PORT_DEFAULT_NAME)
+
+    spc = SerialPortController(spp)
+    win.addTab(spc, 'Serial port control')
+
+    # Recording Tab
     main_tab = QWidget()
+    layout = QVBoxLayout()
     main_tab.setLayout(layout)
     win.addTab(main_tab, 'Recording')
 
@@ -29,11 +46,7 @@ if __name__ == '__main__':
     recording_consumer = RecordingConsumer()
     layout.addWidget(recording_consumer)
 
-    spp = SerialPortParser('/dev/cu.SLAB_USBtoUART')
-
-    spc = SerialPortController(spp)
-    win.addTab(spc, 'Serial port control')
-
+    # Data viewer tab
     dv = DataViewer()
     win.addTab(dv, 'Data viewer')
 
