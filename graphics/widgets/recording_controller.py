@@ -10,13 +10,15 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QListW
 from vispy import app
 
 import constants as cn
+from graphics.widgets.extensions.blink import BlinkExtension
 from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
+from graphics.widgets.extensions.vertical_scrollable import VerticalScrollableExtension
 from utils import logger
 
 
 class RecordingController(QWidget):
-    def __init__(self, max_displayed_gestures=3, *args, **kwargs):
+    def __init__(self, max_displayed_gestures=10, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Here we instantiate some members that need to be bound to `self`
@@ -52,7 +54,7 @@ class RecordingController(QWidget):
     def _setup_main_layout(self):
         main_layout = QHBoxLayout()
         main_layout.addLayout(self._setup_control_layout(), 1)
-        main_layout.addLayout(self._setup_instruction_layout(), 1)
+        main_layout.addLayout(self._setup_instruction_layout(), 2)
         main_layout.addLayout(self._setup_display_layout(), 3)
         main_layout.setContentsMargins(5, 5, 5, 5)
         main_layout.setSpacing(5)
@@ -157,7 +159,7 @@ class RecordingController(QWidget):
         return self.instruction_column_layout
 
     def _setup_display_layout(self):
-        return self.display_column_layout
+        return VerticalScrollableExtension(self.display_column_layout)
 
     def setup_capturing_keystrokes(self):
         # TODO maybe profile this? possibly register only somewhere
@@ -222,8 +224,10 @@ class RecordingController(QWidget):
         self.displayed_canvases.append(canvas)
         widget = canvas.native
         widget = NamedExtension(f'{name or ""} - {record_time or ""}', widget)
+        widget = BlinkExtension(widget)
         widget = ClosableExtension(widget)
         widget.setMinimumWidth(600)
+        widget.setFixedHeight(200)
         self.display_column_layout.addWidget(widget)
 
         while len(self.displayed_canvases) > self.max_displayed_gestures:

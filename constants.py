@@ -7,6 +7,7 @@ DATA_NORMALIZATION_COEFFICIENT = 5
 SENSOR_DATA_PREFIXES = ('aworld', 'ypr', 'areal')
 
 SERIAL_PORT_BAUD_RATE = 115200
+SERIAL_PORT_DEFAULT_NAME = '/dev/cu.SLAB_USBtoUART'
 
 SENSOR_COUNT = 5
 SENSOR_ID_OFFSET = 2  # This is the i2c multiplexer id offset
@@ -61,3 +62,9 @@ NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(GESTURE
                             for name in GESTURES}
 
 EMOJI_FONT = QFont('Menlo', 24)
+
+SIMULATOR_FREQUENCY = 28
+SIMULATOR_TICK_CHANGE = 0.5
+SIMULATOR_VALUES_RANGE = 10
+
+CONSOLE_LOGGER_BUFFER_INTERVAL = 0.5

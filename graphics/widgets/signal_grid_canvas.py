@@ -49,7 +49,7 @@ class SignalGridCanvas(app.Canvas):
             for i in range(cols - 1):
                 # noinspection PyTypeChecker
                 self.visuals.append(LineVisual(np.array(
-                            [[(i + 1) / cols, 0], [(i + 1) / cols, 1]]
+                    [[(i + 1) / cols, 0], [(i + 1) / cols, 1]]
                 )))
             for i in range(rows - 1):
                 # noinspection PyTypeChecker
@@ -141,8 +141,6 @@ class SignalGridCanvas(app.Canvas):
         for signal_id, values in signals:
             self.roll_signal_values(signal_id, values)
 
-    # TODO add removed methods
-
     def on_draw(self, _):
         gloo.clear(color=True)
         self.program.draw('line_strip')
@@ -160,7 +158,6 @@ class SignalGridCanvas(app.Canvas):
         vp = (0, 0, self.physical_size[0], self.physical_size[1])
         self.context.set_viewport(*vp)
         for visual in self.visuals:
-            # TODO no idea why this scale is needed here rip
             scale = 1
             visual.transform = transforms.STTransform(scale=(vp[2] * scale, vp[3] * scale, 1.))
             visual.transforms.configure(canvas=self, viewport=vp)

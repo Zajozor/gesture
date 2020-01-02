@@ -7,8 +7,10 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QApp
     QAbstractItemView, QMenu
 
 import constants as cn
+from graphics.widgets.extensions.blink import BlinkExtension
 from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
+from graphics.widgets.extensions.vertical_scrollable import VerticalScrollableExtension
 from graphics.widgets.renamer import Renamer
 from graphics.widgets.signal_grid_canvas import SignalGridCanvas
 from utils import logger
@@ -42,8 +44,22 @@ class DataViewer(QWidget):
         self.gesture_tree_view.setAnimated(True)
         control_column.addWidget(self.gesture_tree_view)
 
-        self.display_column = QVBoxLayout()
-        main_layout.addLayout(self.display_column, stretch=2)
+        self.displayed_gestures_layout = QVBoxLayout()
+
+        display_column = QVBoxLayout()
+
+        close_all_button = QPushButton('❌ Close all')
+        close_all_button.setFont(cn.EMOJI_FONT)
+
+        def close_all_displayed_gestures():
+            for i in range(self.displayed_gestures_layout.count()):
+                self.displayed_gestures_layout.itemAt(i).widget().close()
+
+        close_all_button.clicked.connect(close_all_displayed_gestures)
+
+        display_column.addWidget(close_all_button)
+        display_column.addLayout(VerticalScrollableExtension(self.displayed_gestures_layout))
+        main_layout.addLayout(display_column, stretch=2)
 
         self.refresh_list()
 
@@ -98,13 +114,15 @@ class DataViewer(QWidget):
         filename = DataViewer.get_filename(model_index)
         selected_file = cn.DATA_FOLDER / filename
         data = np.load(selected_file)
-        self.display_column.addWidget(
-            ClosableExtension(
-                NamedExtension(filename,
-                               SignalGridCanvas.from_data(data, title=filename).native
-                               )
-            )
-        )
+
+        widget = SignalGridCanvas.from_data(data, title=filename).native
+        widget = NamedExtension(filename, widget)
+        widget = BlinkExtension(widget)
+        widget = ClosableExtension(widget)
+        widget.setMinimumWidth(600)
+        widget.setFixedHeight(200)
+
+        self.displayed_gestures_layout.addWidget(widget)
 
     def gesture_context_menu(self, point):
         model_index = self.gesture_tree_view.indexAt(point)
@@ -115,7 +133,10 @@ class DataViewer(QWidget):
 
         menu = QMenu()
 
-        menu.addAction('Move', lambda: Renamer(DataViewer.get_filename(model_index)).exec())
+        def move_dialog():
+            Renamer(DataViewer.get_filename(model_index)).exec()
+
+        menu.addAction('Move', move_dialog)
 
         def trash_and_remove_from_tree():
             if Renamer.trash_gesture(DataViewer.get_filename(model_index)):
