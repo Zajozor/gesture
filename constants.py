@@ -25,7 +25,7 @@ DEFAULT_WINDOW_SIZE = (800, 150)
 
 BASE_DIR = Path(__file__).parent.absolute()
 DATA_FOLDER = BASE_DIR / 'data/gestures'
-MODELS_FOLDER = BASE_DIR / 'models/render'
+MODELS_FOLDER = BASE_DIR / 'resources/render'
 GESTURE_PREFIX = 'g'
 GESTURE_NAME_SEPARATOR = '-'
 GESTURE_META_SEPARATOR = ','
