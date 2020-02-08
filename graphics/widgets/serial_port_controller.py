@@ -1,7 +1,7 @@
 import os
 
 from PyQt5.QtWidgets import QWidget, QLineEdit, QLabel, QPushButton, QGridLayout, QVBoxLayout, QApplication, \
-    QComboBox, QFrame
+    QComboBox, QFrame, QCheckBox
 from vispy import app
 
 import constants as cn
@@ -68,6 +68,12 @@ class SerialPortController(QWidget):
         self.stop_button.setFont(cn.EMOJI_FONT)
         self.active_indicator_label.setFont(cn.EMOJI_FONT)
 
+        self.log_serial_data_button = QCheckBox('Log raw serial data')
+
+        def toggle_serial_port_parser_verbosity(checked):
+            self.serial_port_parser_instance.verbose = checked
+        self.log_serial_data_button.stateChanged.connect(toggle_serial_port_parser_verbosity)
+
         visual_console_logger = VisualConsoleLogger(spp_instance=serial_port_parser_instance)
 
         widget_layout = QGridLayout()
@@ -81,16 +87,17 @@ class SerialPortController(QWidget):
         widget_layout.addWidget(self.serial_port_name_combo_box, 4, 0)
         widget_layout.addWidget(self.refresh_choices_button, 5, 0)
         widget_layout.addWidget(self.serial_port_name_edit, 6, 0)
+        widget_layout.addWidget(self.log_serial_data_button, 7, 0)
 
         separator = QFrame()
         separator.setFrameShape(QFrame.HLine)
         separator.setFrameShadow(QFrame.Sunken)
 
-        widget_layout.addWidget(separator, 7, 0)
+        widget_layout.addWidget(separator, 8, 0)
 
         widget_layout.addWidget(SerialPortSimulatorController(
             self.serial_port_name_edit
-        ), 8, 0, 3, 1)
+        ), 9, 0, 3, 1)
 
         # This needs to be bound to self otherwise is garbage collected
         # TODO do this reactively instead of polling

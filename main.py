@@ -1,6 +1,8 @@
 
 import warnings
 
+from utils import logger
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 # We use this to suppress a group of warnings that are a result of outdated libraries
 # available on conda channels.
@@ -15,27 +17,24 @@ from input.serial_port_parser import SerialPortParser  # noqa: E402
 from processing.consumers.recording_consumer import RecordingConsumer  # noqa: E402
 from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple  # noqa: E402
 
-# TODO log handler logging to file for historical purposes. also add debug log messages to various places
-# TODO show raw serial output?
-
 
 if __name__ == '__main__':
+    logger.debug('Starting up application')
     q_app = QApplication([])
 
     win = QTabWidget()
     win.setMinimumSize(1600, 850)
 
-    # Serial port TAB
+    # Serial port Tab
     spp = SerialPortParser(cn.SERIAL_PORT_DEFAULT_NAME)
-
     spc = SerialPortController(spp)
     win.addTab(spc, 'Serial port control')
 
     # Recording Tab
-    main_tab = QWidget()
+    recording_tab = QWidget()
     layout = QVBoxLayout()
-    main_tab.setLayout(layout)
-    win.addTab(main_tab, 'Recording')
+    recording_tab.setLayout(layout)
+    win.addTab(recording_tab, 'Recording')
 
     canvas_consumer = SignalGridCanvasConsumer(cell_contents=(
         CellContentTriple(0, 0, 0), CellContentTriple(0, 1, 1), CellContentTriple(0, 2, 2),
@@ -45,6 +44,8 @@ if __name__ == '__main__':
 
     recording_consumer = RecordingConsumer()
     layout.addWidget(recording_consumer)
+
+    # Recording session tab
 
     # Data viewer tab
     dv = DataViewer()

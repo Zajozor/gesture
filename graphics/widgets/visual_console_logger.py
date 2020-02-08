@@ -31,7 +31,8 @@ class VisualConsoleLogger(SceneCanvas):
             # Bound to self, otherwise would be GCed
             def write_log(_):
                 if spp_instance.current_active_state:
-                    self.console.write(f'Buffer: {spp_instance.buffer}')
+                    formatted_buffer = ' | '.join(','.join(f'{x:6.3f}' for x in y) for y in spp_instance.buffer)
+                    self.console.write(f'Buffer: {formatted_buffer}')
 
             self.console_timer = app.Timer(
                 interval=spp_buffer_interval,

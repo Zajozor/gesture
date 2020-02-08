@@ -67,9 +67,10 @@ class SerialPortParser:
     def read_serial(self):
         while self.current_active_state and self.target_active_state:
             try:
-                data = self.serial_port.readline().rstrip().decode().split()
+                data = self.serial_port.readline().rstrip().decode()
                 if self.verbose:
-                    logger.debug(f'Serial received data: {data}')
+                    logger.debug(f'Serial port raw received data: `{data}`')
+                data = data.split()
             except (AttributeError, UnicodeDecodeError, TypeError, serial.SerialException) as e:
                 logger.warning(f'Serial reading error: {e}')
                 self.cleanup_serial()

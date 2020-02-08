@@ -1,6 +1,15 @@
 import logging
 
-FORMAT = '[%(levelname)7s] %(asctime)-15s %(message)s'
-logging.basicConfig(format=FORMAT, level=logging.DEBUG)
-
 logger = logging.getLogger('gesture')
+logger.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('[%(levelname)7s] %(asctime)-15s %(message)s')
+
+file_handler = logging.FileHandler('data/op.log')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(formatter)
+console_handler.setLevel(logging.INFO)
+logger.addHandler(console_handler)
