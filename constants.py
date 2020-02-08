@@ -30,6 +30,7 @@ MODELS_FOLDER = BASE_DIR / 'resources/render'
 GESTURE_PREFIX = 'g'
 GESTURE_NAME_SEPARATOR = '-'
 GESTURE_META_SEPARATOR = ','
+GESTURE_NAME_DATETIME_FORMAT = '%Y%m%d-%H%M%S'
 GESTURE_NAME_TYPE_INDEX = 1
 TRASH_GESTURE_INDEX = -1
 
@@ -60,6 +61,7 @@ ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(GESTURE_NAME_
                             for name in GESTURES}
 NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_')
                             for name in GESTURES}
+NICE_TO_NUMBERS_GESTURES = {name: i for (i, name) in enumerate(GESTURES)}
 
 EMOJI_FONT = QFont('Menlo', 24)
 

@@ -3,3 +3,4 @@ __pycache__
 .vscode
 data/
 node_modules
+*.blend1
