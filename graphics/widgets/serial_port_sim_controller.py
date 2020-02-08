@@ -25,7 +25,8 @@ class SerialPortSimulatorController(QWidget):
                 self.serial_simulator.start()
                 serial_port_name_edit.setText(self.serial_simulator.left)
                 simulation_info_label.setText('Running')
-                toggle_simulation_button.setText('Stop serial simulator')
+                toggle_simulation_button.setEnabled(False)
+                toggle_simulation_button.setText('Stop serial simulator (not yet implemented)')
             else:
                 simulation_info_label.setText('Not running')
                 toggle_simulation_button.setText('Start serial simulator')

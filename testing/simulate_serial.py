@@ -10,6 +10,8 @@ from random import random, randint
 from subprocess import Popen, PIPE
 from threading import Thread
 
+import serial
+
 import constants as cn
 from utils import logger
 
@@ -31,7 +33,7 @@ class SerialSimulator:
             return
 
         self.left = self.p.stderr.readline().decode().strip().split(' ')[-1]
-        self.right = self.p.stderr.readline().decode().strip().split(' ')[-1]
+        self._right = self.p.stderr.readline().decode().strip().split(' ')[-1]
         logger.info(f'Simulated Serial created, Listen on `{self.left}`')
 
         self.values_range = values_range
@@ -43,21 +45,7 @@ class SerialSimulator:
         self.randomize_data()
         self.sleep_time = 1 / frequency
 
-        def put_data(right):
-            try:
-                with open(right, 'wb+') as term:
-                    while not self.exit_requested:
-                        for sensor_id in range(cn.SENSOR_ID_OFFSET,
-                                               cn.SENSOR_ID_OFFSET + cn.SENSOR_COUNT):
-                            data = self.generate_data(sensor_id)
-                            term.write(data.encode())
-                            term.write('\n'.encode())
-                            term.flush()
-                        time.sleep(self.sleep_time)
-            except Exception as e:
-                logger.error('Put data received invalid specifier', str(e))
-
-        self.data_process = Thread(target=put_data, args=(self.right,))
+        self.simulation_thread = None
 
     def randomize_data(self):
         logger.info('Randomizing data.')
@@ -81,11 +69,35 @@ class SerialSimulator:
         self.sleep_time = 1 / frequency
 
     def start(self, threaded=True):
+        # TODO existing the serial simulator is not implemented, because
+        #  it requires timeouts on writes/flush to the corresponding side of the serial port
+        #  - if no one is reading from the other side, the write just hangs, which seems
+        #  to be complicated to handle
         self.exit_requested = False
-        self.data_process.start()
+
+        def put_data(socket_name):
+            try:
+                with open(socket_name, 'wb+') as serial_port:
+                    while not self.exit_requested:
+                        for sensor_id in range(cn.SENSOR_ID_OFFSET,
+                                               cn.SENSOR_ID_OFFSET + cn.SENSOR_COUNT):
+                            data = self.generate_data(sensor_id)
+                            try:
+                                serial_port.write(data.encode())
+                                serial_port.write('\n'.encode())
+                                serial_port.flush()
+                            except serial.SerialTimeoutException:
+                                logger.debug('Simulator write timed out')
+                        time.sleep(self.sleep_time)
+                logger.debug(f'Closed socket {socket_name}')
+            except Exception as e:
+                logger.error(f'Put data received invalid specifier {e}')
+
+        self.simulation_thread = Thread(target=put_data, args=(self._right,))
+        self.simulation_thread.start()
 
         if not threaded:
-            self.data_process.join()
+            self.simulation_thread.join()
 
     def kill_socket(self):
         self.exit_requested = True
