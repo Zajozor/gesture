@@ -184,7 +184,7 @@ class RecordingController(QWidget):
         self._recording.set()
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
-        self.gesture_record_time = time.strftime("%Y%m%d-%H%M%S")
+        self.gesture_record_time = time.strftime(cn.GESTURE_NAME_DATETIME_FORMAT)
 
     def stop_recording(self):
         if not self._recording.is_set():
