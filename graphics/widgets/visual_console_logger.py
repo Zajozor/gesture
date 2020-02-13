@@ -1,3 +1,4 @@
+import logging
 from logging import StreamHandler
 from typing import Union
 
@@ -41,7 +42,9 @@ class VisualConsoleLogger(SceneCanvas):
             )
 
         if add_logger_handler:
-            logger.addHandler(VispyConsoleHandler(self.console))
+            handler = VispyConsoleHandler(self.console)
+            handler.setLevel(logging.INFO)
+            logger.addHandler(handler)
 
     def on_mouse_wheel(self, event):
         self.console.font_size += event.delta[1]
@@ -49,7 +52,7 @@ class VisualConsoleLogger(SceneCanvas):
 
 class VispyConsoleHandler(StreamHandler):
     def __init__(self, console: Console):
-        super().__init__(self)
+        super().__init__()
         self.console = console
 
     def emit(self, record):

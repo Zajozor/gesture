@@ -2,14 +2,15 @@ import time
 from threading import Event
 from typing import Union
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QObject, QEvent
 from PyQt5.QtGui import QKeyEvent, QMovie
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QListWidget, QHBoxLayout, QLabel, QLineEdit, \
     QFrame
 from vispy import app
 
 import constants as cn
+from graphics.event_filter import GlobalEventFilter
+from graphics.styles import Q_PUSH_BUTTON_TOGGLE_STYLE
 from graphics.widgets.extensions.blink import BlinkExtension
 from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
@@ -77,6 +78,9 @@ class RecordingController(QWidget):
         self.stop_button.setEnabled(False)
         main_button_layout.addWidget(self.stop_button)
 
+        self.start_button.setStyleSheet(Q_PUSH_BUTTON_TOGGLE_STYLE)
+        self.stop_button.setStyleSheet(Q_PUSH_BUTTON_TOGGLE_STYLE)
+
         control_column_layout.addLayout(self._setup_session_layout())
 
         return control_column_layout
@@ -111,7 +115,7 @@ class RecordingController(QWidget):
 
         self.gesture_choice.addItems(cn.GESTURES)
         self.gesture_choice.setCurrentRow(0)
-        self.gesture_choice.setMinimumSize(250, 370)
+        self.gesture_choice.setMinimumSize(250, 250)
         # noinspection PyUnresolvedReferences
         self.gesture_choice.currentTextChanged.connect(self.update_shown_gesture_filename)
 
@@ -162,21 +166,22 @@ class RecordingController(QWidget):
         return VerticalScrollableExtension(self.display_column_layout)
 
     def setup_capturing_keystrokes(self):
-        # TODO maybe profile this? possibly register only somewhere
-        QtWidgets.QApplication.instance().installEventFilter(self)
+        global_event_filter = GlobalEventFilter.get_instance()
 
-    def eventFilter(self, source, event):
-        if self.space_control_enabled and type(event) == QKeyEvent:
-            key_event = QKeyEvent(event)
-            if key_event.key() == Qt.Key_Space:
-                event_type = key_event.type()
-                if event_type == QKeyEvent.KeyPress and not key_event.isAutoRepeat():
-                    self.start_recording()
-                    return True
-                if event_type == QKeyEvent.KeyRelease:
-                    self.stop_recording()
-                    return True
-        return super().eventFilter(source, event)
+        def space_callback(_: QObject, event: QEvent):
+            if self.space_control_enabled and type(event) == QKeyEvent:
+                key_event = QKeyEvent(event)
+                if key_event.key() == Qt.Key_Space:
+                    event_type = key_event.type()
+                    if event_type == QKeyEvent.KeyPress and not key_event.isAutoRepeat():
+                        self.start_recording()
+                        return True
+                    if event_type == QKeyEvent.KeyRelease:
+                        self.stop_recording()
+                        return True
+            return False
+
+        global_event_filter.install_key_hook(Qt.Key_Space, space_callback)
 
     def start_recording(self):
         if self._recording.is_set():

@@ -1,6 +1,6 @@
-
 import warnings
 
+from graphics.event_filter import GlobalEventFilter
 from utils import logger
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -17,13 +17,12 @@ from input.serial_port_parser import SerialPortParser  # noqa: E402
 from processing.consumers.recording_consumer import RecordingConsumer  # noqa: E402
 from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple  # noqa: E402
 
-
 if __name__ == '__main__':
     logger.debug('Starting up application')
     q_app = QApplication([])
 
     win = QTabWidget()
-    win.setMinimumSize(1600, 850)
+    win.setMinimumSize(1200, 650)
 
     # Serial port Tab
     spp = SerialPortParser(cn.SERIAL_PORT_DEFAULT_NAME)
@@ -56,4 +55,6 @@ if __name__ == '__main__':
     dr.add_consumer(canvas_consumer)
     dr.add_consumer(recording_consumer)
     win.show()
+
+    q_app.installEventFilter(GlobalEventFilter.get_instance())
     q_app.exec()
