@@ -16,8 +16,9 @@ class GlobalEventFilter(QObject):
             _instance = GlobalEventFilter()
         return _instance
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, log_events=False, **kwargs):
         super().__init__(*args, **kwargs)
+        self.log_events = log_events
         self.key_hooks: Dict[Qt.Key, List[Callable[[QObject, QKeyEvent], bool]]] = {}
 
     def install_key_hook(self, key: Qt.Key, callback: Callable[[QObject, QKeyEvent], bool]):
@@ -32,8 +33,8 @@ class GlobalEventFilter(QObject):
         if type(event) == QKeyEvent:
             key_event = QKeyEvent(event)
             key = key_event.key()
-            logger.debug(
-                f'Event: Key {key} Type {key_event.type()} Source {type(source).__name__}')
+            if self.log_events:
+                logger.debug(f'Event: Key {key} Type {key_event.type()} Source {type(source).__name__}')
             if key in self.key_hooks:
                 for hook in self.key_hooks[key]:
                     if hook(source, event):

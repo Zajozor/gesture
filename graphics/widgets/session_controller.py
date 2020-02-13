@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QVBoxLayout, QLab
 import constants as cn
 from graphics.widgets.session.main import SLIDE_WIDGETS
 from graphics.widgets.session.storage import SessionStorage
+from utils import logger
 
 
 class SessionController(QWidget):
@@ -75,6 +76,8 @@ class SessionController(QWidget):
 
         def next_slide():
             nonlocal current_session_index, session_length, current_slide_widget
+            logger.debug(f'Storage after slide {current_session_index}: {session_storage}')
+
             current_session_index += 1
 
             if current_slide_widget:

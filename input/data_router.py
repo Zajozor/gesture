@@ -48,10 +48,12 @@ class DataRouter:
                             self.update_counts[sensor_id] += 1
 
                     current_time = time.time()
-                    if current_time - self.last_update > cn.SENSOR_UPDATE_LOG_FREQUENCY:
-                        self.last_update = current_time
-                        logger.info(f'Update counts after {cn.SENSOR_UPDATE_LOG_FREQUENCY}s: '
+                    if (current_time - self.last_update > cn.SENSOR_UPDATE_LOG_FREQUENCY and sum(
+                            self.update_counts) > 0) \
+                            or current_time - self.last_update > 60 * cn.SENSOR_UPDATE_LOG_FREQUENCY:
+                        logger.info(f'Update counts after {current_time - self.last_update:.2f}s: '
                                     f'{self.update_counts}, Σ: {sum(self.update_counts)}')
+                        self.last_update = current_time
                         self.update_counts = [0] * cn.SENSOR_COUNT
 
                 self.route_data(data, data_changed)
