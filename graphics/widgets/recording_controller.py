@@ -109,6 +109,7 @@ class RecordingController(QWidget):
 
         def space_control_checkbox_changed(state):
             self.space_control_enabled = state == Qt.Checked
+            self.parent().parent().parent().set_tab_switching(not self.space_control_enabled)
 
         space_control_checkbox.stateChanged.connect(space_control_checkbox_changed)
         session_layout.addWidget(space_control_checkbox)
