@@ -25,8 +25,9 @@ class COLORS:
 DEFAULT_WINDOW_SIZE = (800, 150)
 
 BASE_DIR = Path(__file__).parent.absolute()
-DATA_FOLDER = BASE_DIR / 'data/gestures'
-MODELS_FOLDER = BASE_DIR / 'resources/render'
+DATA_FOLDER = BASE_DIR / 'data' / 'gestures'
+MODELS_FOLDER = BASE_DIR / 'resources' / 'render'
+SESSIONS_FOLDER = BASE_DIR / 'resources' / 'sessions'
 GESTURE_PREFIX = 'g'
 GESTURE_NAME_SEPARATOR = '-'
 GESTURE_META_SEPARATOR = ','
