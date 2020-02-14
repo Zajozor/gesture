@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 
 from graphics.event_filter import GlobalEventFilter
-from graphics.widgets.window import MainWindow
+from graphics.widgets.main_window import MainWindow
 from utils import logger
 
 if __name__ == '__main__':
