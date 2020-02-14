@@ -57,12 +57,6 @@ class SignalGridCanvas(app.Canvas):
                     [[0, (i + 1) / rows], [1, (i + 1) / rows]]
                 )))
 
-    def _update_program_indices(self):
-        """
-        Called to pass new index data inside the numpy arrays to the gloo program
-        """
-        self.program['a_index'] = self.row_col_time_indices
-
     def _update_program_colors(self):
         self.program['a_color'] = self.signal_colors
 
@@ -73,7 +67,7 @@ class SignalGridCanvas(app.Canvas):
         self.program['a_value'] = self.signal_values
 
     def _update_program(self):
-        self._update_program_indices()
+        self.program['a_index'] = self.row_col_time_indices
         self._update_program_colors()
         self._update_program_values()
 
