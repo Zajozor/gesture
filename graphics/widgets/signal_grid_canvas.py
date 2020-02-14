@@ -158,6 +158,8 @@ class SignalGridCanvas(app.Canvas):
         vp = (0, 0, self.physical_size[0], self.physical_size[1])
         self.context.set_viewport(*vp)
         for visual in self.visuals:
+            # TODO on Retina display, this needs to be 0.5, due to Hi-DPI, otherwise
+            # lines are not shown where expected
             scale = 1
             visual.transform = transforms.STTransform(scale=(vp[2] * scale, vp[3] * scale, 1.))
             visual.transforms.configure(canvas=self, viewport=vp)

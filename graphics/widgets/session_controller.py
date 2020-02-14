@@ -1,12 +1,13 @@
-import json
 import os
 
+import yaml
+from yaml.parser import ParserError
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QListWidget, QStackedLayout
 
 import constants as cn
-from graphics.widgets.session.main import SLIDE_WIDGETS
+from graphics.widgets.session.slide import Slide
 from graphics.widgets.session.storage import SessionStorage
 from utils import logger
 
@@ -55,8 +56,8 @@ class SessionController(QWidget):
         return self.session_active
 
     def load_sessions(self):
-        sessions = map(lambda name: name[:-5],
-                       filter(lambda name: name.endswith('.json'),
+        sessions = map(lambda name: name.rsplit('.', 1)[0],
+                       filter(lambda name: name.endswith('.yml'),
                               os.listdir(cn.SESSIONS_FOLDER)))
         for session in sessions:
             self.selection_listbox.addItem(session)
@@ -66,10 +67,16 @@ class SessionController(QWidget):
         self.stacked_layout.setCurrentIndex(1)
         self.session_active = True
 
-        with open(cn.SESSIONS_FOLDER / f'{session}.json') as session_file:
-            session_spec = json.load(session_file)
+        with open(cn.SESSIONS_FOLDER / f'{session}.yml') as session_file:
+            try:
+                session_spec = yaml.full_load(session_file)
+            except ParserError:
+                self.stacked_layout.setCurrentIndex(0)
+                self.session_active = False
+                logger.info(f'Malformed yaml file: {session}.yml')
+                return
 
-        session_length = len(session_spec)
+        session_length = len(session_spec['slides'])
         current_session_index = -1
         current_slide_widget = None
         session_storage = SessionStorage()
@@ -88,10 +95,8 @@ class SessionController(QWidget):
                 self.session_active = False
                 return
 
-            slide_spec = session_spec[current_session_index]
-            current_slide_widget = SLIDE_WIDGETS[slide_spec['type']](spec=slide_spec,
-                                                                     next_callback=next_slide,
-                                                                     storage=session_storage)
+            slide_spec = session_spec['slides'][current_session_index]
+            current_slide_widget = Slide(slide_spec, next_slide, session_storage)
             self.play_layout.addWidget(current_slide_widget)
             current_slide_widget.activateWindow()
 
