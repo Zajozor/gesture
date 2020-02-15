@@ -15,7 +15,7 @@ from graphics.widgets.extensions.blink import BlinkExtension
 from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
 from graphics.widgets.extensions.vertical_scrollable import VerticalScrollableExtension
-from utils import logger
+from utils import logger, application_state
 
 
 class RecordingController(QWidget):
@@ -107,7 +107,7 @@ class RecordingController(QWidget):
 
         def space_control_checkbox_changed(state):
             self.space_control_enabled = state == Qt.Checked
-            self.parent().parent().parent().set_tab_switching(not self.space_control_enabled)
+            application_state.main_window.set_tab_switching_enabled(not self.space_control_enabled)
             global_event_filter = GlobalEventFilter.get_instance()
 
             if self.space_control_enabled:

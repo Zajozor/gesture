@@ -4,25 +4,12 @@ import numpy as np
 
 import constants as cn
 from graphics.widgets.signal_grid_canvas import SignalGridCanvas
+from processing.consumers.cell import CellContent
 from processing.consumers.consumer_mixin import ConsumerMixin
 
 
-class CellContent:
-    def __init__(self, row, col, count):
-        self.row = row
-        self.col = col
-        self.count = count
-
-
-class CellContentTriple(CellContent):
-    def __init__(self, row, col, input_id):
-        super().__init__(row, col, 3)
-        self.input_sensor_id = input_id
-        self.signal_ids = None
-
-
 class SignalGridCanvasConsumer(SignalGridCanvas, ConsumerMixin):
-    def __init__(self, cell_contents: Tuple[CellContent, ...], *args, **kwargs):
+    def __init__(self, cell_contents: Tuple[CellContent, ...] = cn.DEFAULT_CELL_CONTENTS, *args, **kwargs):
         """
         Creates a SignalGridCanvas, which can also receive data.
         Upon calling `receive_data`, the signals displayed are rolled.
@@ -40,10 +27,7 @@ class SignalGridCanvasConsumer(SignalGridCanvas, ConsumerMixin):
 
     def receive_data(self, data: np.ndarray, data_changed: List[bool]):
         for cell in self.cell_contents:
-            if isinstance(cell, CellContentTriple):
-                if data_changed[cell.input_sensor_id]:
-                    self.roll_signal_values_multi(
-                        zip(cell.signal_ids, np.reshape(data[cell.input_sensor_id], (3, 1)))
-                    )
-            else:
-                raise NotImplementedError("Other data formats than triples not supported yet")
+            if data_changed[cell.input_sensor_id]:
+                self.roll_signal_values_multi(
+                    zip(cell.signal_ids, np.reshape(data[cell.input_sensor_id], (3, 1)))
+                )

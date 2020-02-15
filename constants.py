@@ -2,6 +2,8 @@ from pathlib import Path
 
 from PyQt5.QtGui import QFont
 
+from processing.consumers.cell import CellContent
+
 DATA_NORMALIZATION_COEFFICIENT = 5
 
 SENSOR_DATA_PREFIXES = ('aworld', 'ypr', 'areal')
@@ -71,3 +73,5 @@ SIMULATOR_TICK_CHANGE = 0.5
 SIMULATOR_VALUES_RANGE = 10
 
 CONSOLE_LOGGER_BUFFER_INTERVAL = 3
+
+DEFAULT_CELL_CONTENTS = tuple(CellContent(input_id=i, col=i) for i in range(SENSOR_COUNT))

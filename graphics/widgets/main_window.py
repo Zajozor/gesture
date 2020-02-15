@@ -1,7 +1,7 @@
 import warnings
-from typing import Union
 
 from graphics.widgets.session_controller import SessionController
+from utils import application_state
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
 # We use this to suppress a group of warnings that are a result of outdated libraries
@@ -16,57 +16,50 @@ from input.data_router import DataRouter  # noqa: E402
 from input.serial_port_parser import SerialPortParser  # noqa: E402
 from processing.consumers.recording_consumer import RecordingConsumer  # noqa: E402
 
-from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer, CellContentTriple  # noqa: E402
-
-_instance: Union['MainWindow', None] = None
+from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer  # noqa: E402
 
 
 class MainWindow(QTabWidget):
     @staticmethod
     def get_instance():
-        global _instance
-        if not _instance:
-            _instance = MainWindow()
-        return _instance
+        if not application_state.setup_complete:
+            application_state.set_up(MainWindow())
+        return application_state.main_window
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.serial_port_parser = SerialPortParser(cn.SERIAL_PORT_DEFAULT_NAME)
+        self.data_router = DataRouter(serial_port_parser_instance=self.serial_port_parser, enable_count_logs=True)
+
+        self.init_ui()
+        self.data_router.start(threaded=True)
+
+    def init_ui(self):
         self.setMinimumSize(1200, 650)
 
-        # Serial port Tab
-        spp = SerialPortParser(cn.SERIAL_PORT_DEFAULT_NAME)
-        spc = SerialPortController(spp)
+        spc = SerialPortController(self.serial_port_parser)
         self.addTab(spc, 'Serial port control')
 
         # Recording Tab
-        recording_tab = QWidget()
         layout = QVBoxLayout()
+        canvas_consumer = SignalGridCanvasConsumer()
+        self.data_router.add_consumer(canvas_consumer)
+        layout.addWidget(canvas_consumer.native)
+        recording_consumer = RecordingConsumer()
+        self.data_router.add_consumer(recording_consumer)
+        layout.addWidget(recording_consumer)
+
+        recording_tab = QWidget()
         recording_tab.setLayout(layout)
         self.addTab(recording_tab, 'Recording')
 
-        canvas_consumer = SignalGridCanvasConsumer(cell_contents=(
-            CellContentTriple(0, 0, 0), CellContentTriple(0, 1, 1), CellContentTriple(0, 2, 2),
-            CellContentTriple(0, 3, 3), CellContentTriple(0, 4, 4),
-        ), rows=1, cols=5, length=100)
-        layout.addWidget(canvas_consumer.native)
-
-        recording_consumer = RecordingConsumer()
-        layout.addWidget(recording_consumer)
-
-        # Recording session tab
         session_controller = SessionController()
         self.addTab(session_controller, 'Session')
 
-        # Data viewer tab
         dv = DataViewer()
         self.addTab(dv, 'Data viewer')
 
-        dr = DataRouter(serial_port_parser_instance=spp, enable_count_logs=True)
-        dr.start(threaded=True)
-        dr.add_consumer(canvas_consumer)
-        dr.add_consumer(recording_consumer)
-
-    def set_tab_switching(self, state: bool):
+    def set_tab_switching_enabled(self, state: bool):
         for i in range(self.count()):
             if i == self.currentIndex():
                 continue

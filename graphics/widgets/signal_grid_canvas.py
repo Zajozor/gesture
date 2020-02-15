@@ -10,7 +10,7 @@ from graphics.shaders.grid_lines import VERTEX_SHADER, FRAGMENT_SHADER
 
 
 class SignalGridCanvas(app.Canvas):
-    def __init__(self, rows: int = 1, cols: int = 1, length: int = 200,
+    def __init__(self, rows: int = 1, cols: int = cn.SENSOR_COUNT, length: int = 100,
                  program: gloo.Program = None, show_grid=True, *args, **kwargs):
         """
         Creates a canvas that displays multiple signals in a grid.
