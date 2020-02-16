@@ -15,6 +15,8 @@ class BlinkExtension(QWidget):
         main_layout = QHBoxLayout()
         self.setLayout(main_layout)
         main_layout.addWidget(child_widget)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
         self._animation = QPropertyAnimation(self, b'color')
         self._animation.setDuration(duration_ms)

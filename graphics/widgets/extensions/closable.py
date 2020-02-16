@@ -5,7 +5,6 @@ import constants as cn
 
 class ClosableExtension(QWidget):
     def __init__(self, child_widget: QWidget, stretch=4, *args, **kwargs):
-        # TODO implement sides
         super().__init__(*args, **kwargs)
         main_layout = QHBoxLayout()
         self.setLayout(main_layout)
@@ -17,7 +16,7 @@ class ClosableExtension(QWidget):
         close_button.clicked.connect(self.close)
         main_layout.addWidget(close_button, stretch=1)
         main_layout.addWidget(child_widget, stretch=stretch)
-        main_layout.setContentsMargins(5, 5, 5, 5)
+        main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(5)
 
 

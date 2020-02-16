@@ -13,6 +13,7 @@ class VerticalScrollableExtension(QStackedLayout):
         super().__init__(*args, **kwargs)
 
         scrolled_layout.setDirection(direction)
+        scrolled_layout.setSpacing(0)
 
         # First we put the layout into a widget
         container_widget = QWidget()
