@@ -14,7 +14,6 @@ attribute vec3 a_color; // Color.
 varying vec4 v_color; // Varying variables used for clipping in the fragment shader.
 
 varying vec2 v_position;
-//varying vec4 v_ab;
 
 void main() {
     float nrows = u_size.x;
@@ -33,10 +32,6 @@ void main() {
     v_color = vec4(a_color, 1.);
 
     v_index = a_index;
-    // For clipping test in the fragment shader.
-    // v_position = gl_Position.xy;
-    // v_ab = vec4(a, b);
-
 }
 """
 
@@ -45,16 +40,14 @@ FRAGMENT_SHADER = """
 varying vec4 v_color;
 varying vec3 v_index;
 varying vec2 v_position;
-//varying vec4 v_ab;
+
 void main() {
     gl_FragColor = v_color;
     // Discard the fragments between the signals (emulate glMultiDrawArrays).
-    if ((fract(v_index.x) > 0.) || (fract(v_index.y) > 0.)) // like what is this for ?
+    if ((fract(v_index.x) > 0.) || (fract(v_index.y) > 0.)) // Discard malformed row/col
         discard;
 
-
     // Clipping test.
-    //vec2 test = abs((v_position.xy-v_ab.zw)/v_ab.xy);
     if ((v_position.x > 1) || (v_position.y > 1))
         discard;
 }

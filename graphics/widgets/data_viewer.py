@@ -12,7 +12,7 @@ from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
 from graphics.widgets.extensions.vertical_scrollable import VerticalScrollableExtension
 from graphics.widgets.renamer import Renamer
-from graphics.widgets.signal_grid_canvas import SignalGridCanvas
+from graphics.widgets.signal_static import StaticSignalWidget
 from utils import logger
 
 
@@ -27,7 +27,8 @@ class DataViewer(QWidget):
         control_column = QVBoxLayout()
         main_layout.addLayout(control_column, stretch=1)
 
-        refresh_button = QPushButton('Refresh')
+        refresh_button = QPushButton('🔄 Refresh')
+        refresh_button.setFont(cn.EMOJI_FONT)
         refresh_button.clicked.connect(self.refresh_list)
         control_column.addWidget(refresh_button)
 
@@ -48,7 +49,7 @@ class DataViewer(QWidget):
 
         display_column = QVBoxLayout()
 
-        close_all_button = QPushButton('❌ Close all')
+        close_all_button = QPushButton('❌ Close all opened')
         close_all_button.setFont(cn.EMOJI_FONT)
 
         def close_all_displayed_gestures():
@@ -57,7 +58,7 @@ class DataViewer(QWidget):
 
         close_all_button.clicked.connect(close_all_displayed_gestures)
 
-        display_column.addWidget(close_all_button)
+        control_column.addWidget(close_all_button)
         display_column.addLayout(VerticalScrollableExtension(self.displayed_gestures_layout))
         main_layout.addLayout(display_column, stretch=2)
 
@@ -115,7 +116,7 @@ class DataViewer(QWidget):
         selected_file = cn.DATA_FOLDER / filename
         data = np.load(selected_file)
 
-        widget = SignalGridCanvas.from_data(data, title=filename).native
+        widget = StaticSignalWidget(data)
         widget = NamedExtension(filename, widget)
         widget = BlinkExtension(widget)
         widget = ClosableExtension(widget)

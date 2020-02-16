@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt, QObject
 from PyQt5.QtGui import QKeyEvent, QMovie
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QCheckBox, QListWidget, QHBoxLayout, QLabel, QLineEdit, \
     QFrame
-from vispy import app
 
 import constants as cn
 from graphics.event_filter import GlobalEventFilter
@@ -15,6 +14,7 @@ from graphics.widgets.extensions.blink import BlinkExtension
 from graphics.widgets.extensions.closable import ClosableExtension
 from graphics.widgets.extensions.named import NamedExtension
 from graphics.widgets.extensions.vertical_scrollable import VerticalScrollableExtension
+from graphics.widgets.signal_static import StaticSignalWidget
 from utils import logger, application_state
 
 
@@ -222,18 +222,15 @@ class RecordingController(QWidget):
     def update_shown_gesture_filename(self):
         self.gesture_filename_label.setText(self.full_gesture_filename[:-15] + '...')
 
-    def add_displayed_canvas(self, canvas: app.canvas, name=None, record_time=None):
-        self.displayed_canvases.append(canvas)
-        widget = canvas.native
-        widget = NamedExtension(f'{name or ""} - {record_time or ""}', widget)
+    def add_displayed_signal(self, static_signal: StaticSignalWidget, name=None, record_time=None):
+        widget = NamedExtension(f'{name or ""} - {record_time or ""}', static_signal)
         widget = BlinkExtension(widget)
         widget = ClosableExtension(widget)
         widget.setMinimumWidth(600)
         widget.setFixedHeight(200)
+        self.displayed_canvases.append(widget)
         self.display_column_layout.addWidget(widget)
 
         while len(self.displayed_canvases) > self.max_displayed_gestures:
-            self.displayed_canvases[0].on_close()
-            self.displayed_canvases[0].native.setParent(None)
-            self.display_column_layout.takeAt(0).widget().deleteLater()
+            self.displayed_canvases[0].close()
             del self.displayed_canvases[0]

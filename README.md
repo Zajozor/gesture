@@ -16,7 +16,7 @@ binary is required for simulation of the device.
 - [arduino](arduino) contains code used on the microprocessor
 - [graphics](graphics) contains graphics related stuff
     - [shaders](graphics/shaders) GLSL shaders
-    - [signal_canvas.py](graphics/widgets/signal_grid_canvas.py) simply displays signals in a grid
+    - [signal_canvas.py](graphics/widgets/signal_dynamic.py) simply displays signals in a grid
 - [input](input) processes input from the sensor and the user
     - [controller.py](input/controller.py) controls and runs other components
     - [data_reader.py](input/buffered_data_router.py) reads form an input parser and shows

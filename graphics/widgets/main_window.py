@@ -16,7 +16,7 @@ from input.data_router import DataRouter  # noqa: E402
 from input.serial_port_parser import SerialPortParser  # noqa: E402
 from processing.consumers.recording_consumer import RecordingConsumer  # noqa: E402
 
-from processing.consumers.signal_grid_consumer import SignalGridCanvasConsumer  # noqa: E402
+from processing.consumers.signal_grid_consumer import DynamicSignalWidgetConsumer  # noqa: E402
 
 
 class MainWindow(QTabWidget):
@@ -42,7 +42,7 @@ class MainWindow(QTabWidget):
 
         # Recording Tab
         layout = QVBoxLayout()
-        canvas_consumer = SignalGridCanvasConsumer()
+        canvas_consumer = DynamicSignalWidgetConsumer()
         self.data_router.add_consumer(canvas_consumer)
         layout.addWidget(canvas_consumer.native)
         recording_consumer = RecordingConsumer()

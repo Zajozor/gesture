@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout
 
 import constants as cn
 from graphics.widgets.recording_controller import RecordingController
-from graphics.widgets.signal_grid_canvas import SignalGridCanvas
+from graphics.widgets.signal_static import StaticSignalWidget
 from processing.consumers.consumer_mixin import ConsumerMixin
 from utils import logger
 
@@ -30,8 +30,8 @@ class RecordingConsumer(RecordingController, ConsumerMixin):
         if self.save:
             self.save_gesture_async()
         if self.show:
-            self.add_displayed_canvas(
-                SignalGridCanvas.from_data(self.gesture_data[:self.current_gesture_index]),
+            self.add_displayed_signal(
+                StaticSignalWidget(self.gesture_data[:self.current_gesture_index]),
                 self.readable_gesture_name,
                 self.gesture_record_time,
             )
