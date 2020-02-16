@@ -22,6 +22,7 @@ class COLORS:
     BLUE = (0., 0., 1.)
 
     DEFAULT_SIGNAL_COLORS = [RED, GREEN, BLUE]
+    PEN_COLORS = ['r', 'g', 'b']
 
 
 DEFAULT_WINDOW_SIZE = (800, 150)
