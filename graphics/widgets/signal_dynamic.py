@@ -46,10 +46,9 @@ class DynamicSignalWidget(app.Canvas):
         self.visuals = []
         if show_grid:
             for i in range(cols - 1):
-                self.visuals.append(InfiniteLineVisual((i + 1) / cols))
-
+                self.visuals.append(InfiniteLineVisual((i + 1) / cols, color=(0, 0, 0, 1)))
             for i in range(rows - 1):
-                self.visuals.append(InfiniteLineVisual((i + 1) / rows, vertical=False))
+                self.visuals.append(InfiniteLineVisual((i + 1) / rows, vertical=False, color=(0, 0, 0, 1)))
 
     def _update_program_colors(self):
         self.program['a_color'] = self.signal_colors
