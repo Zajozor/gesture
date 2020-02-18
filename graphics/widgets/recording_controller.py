@@ -167,7 +167,7 @@ class RecordingController(QWidget):
     def _setup_display_layout(self):
         return VerticalScrollableExtension(self.display_column_layout)
 
-    def space_callback(self, _: QObject, event: QKeyEvent):
+    def space_callback(self, _: QObject, event: QKeyEvent) -> bool:
         event_type = event.type()
         if event_type == QKeyEvent.KeyPress and not event.isAutoRepeat():
             self.start_recording()
@@ -191,8 +191,8 @@ class RecordingController(QWidget):
         if self.save_checkbox.isChecked():
             self.save_gesture_async()
         if self.show_checkbox.isChecked():
-            self.add_displayed_signal(StaticSignalWidget(
-                self.consumer.gesture_data[:self.consumer.current_gesture_index]),
+            self.add_displayed_signal(
+                StaticSignalWidget(self.consumer.gesture_data),
                 self.readable_gesture_name,
                 self.gesture_record_time,
             )

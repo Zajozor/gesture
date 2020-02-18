@@ -82,7 +82,7 @@ class SessionController(QWidget):
         current_slide_widget = None
         session_storage = SessionStorage()
 
-        def next_slide():
+        def next_slide_callback(quit_session=False):
             nonlocal current_session_index, session_length, current_slide_widget
             logger.debug(f'Storage after slide {current_session_index}: {session_storage}')
 
@@ -91,15 +91,15 @@ class SessionController(QWidget):
             if current_slide_widget:
                 current_slide_widget.close()
 
-            if current_session_index == session_length:
+            if current_session_index == session_length or quit_session:
                 self.stacked_layout.setCurrentIndex(0)
                 self.session_active = False
                 application_state.get_main_window().set_tab_switching_enabled(True)
                 return
 
             slide_spec = session_spec['slides'][current_session_index]
-            current_slide_widget = Slide(slide_spec, next_slide, session_storage)
+            current_slide_widget = Slide(slide_spec, next_slide_callback, session_storage)
             self.play_layout.addWidget(current_slide_widget)
             current_slide_widget.activateWindow()
 
-        next_slide()
+        next_slide_callback()

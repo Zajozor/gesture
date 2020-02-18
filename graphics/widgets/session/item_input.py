@@ -3,6 +3,7 @@ from typing import Union
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QLineEdit, QWidget
 
 from graphics.widgets.session.item_base import BaseItem
+from utils import logger
 
 
 class InputItem(BaseItem):
@@ -20,4 +21,6 @@ class InputItem(BaseItem):
         return widget
 
     def finish(self):
+        if self.item_spec['name'] in self.storage.data:
+            logger.warn(f'Overwriting already present key in storage: {self.item_spec["name"]}')
         self.storage.data[self.item_spec['name']] = self.line_edit.text()

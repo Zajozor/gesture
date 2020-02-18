@@ -19,8 +19,12 @@ class RecordingConsumer(ConsumerMixin):
         self.sensor_count: int = sensor_count
 
         self.recording_active: Event = Event()
-        self.gesture_data: np.ndarray = np.empty((self.max_length, sensor_count, 3))
+        self.raw_gesture_data: np.ndarray = np.empty((self.max_length, sensor_count, 3))
         self.current_gesture_index: int = 0
+
+    @property
+    def gesture_data(self):
+        return self.raw_gesture_data[:self.current_gesture_index]
 
     def start_recording(self):
         self.current_gesture_index = 0
@@ -31,7 +35,7 @@ class RecordingConsumer(ConsumerMixin):
 
     def receive_data(self, data: np.ndarray, data_changed: List[bool]):
         if self.recording_active.is_set():
-            self.gesture_data[self.current_gesture_index] = data
+            self.raw_gesture_data[self.current_gesture_index] = data
             self.current_gesture_index += 1
             if self.current_gesture_index >= self.max_length:
                 logger.error('Maximum gesture length exceeded, overflowing..')

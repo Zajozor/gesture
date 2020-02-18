@@ -22,11 +22,13 @@ class GlobalEventFilter(QObject):
         self.key_hooks: Dict[Qt.Key, List[Callable[[QObject, QKeyEvent], bool]]] = {}
 
     def install_key_hook(self, key: Qt.Key, callback: Callable[[QObject, QKeyEvent], bool]):
+        logger.debug(f'Installing key hook on {key} to call {callback}')
         if key not in self.key_hooks:
             self.key_hooks[key] = []
         self.key_hooks[key].append(callback)
 
     def remove_key_hook(self, key: Qt.Key, callback: Callable[[QObject, QKeyEvent], bool]):
+        logger.debug(f'Removing key hook on {key} to call {callback}')
         self.key_hooks[key].remove(callback)
 
     def eventFilter(self, source: QObject, event: QEvent) -> bool:

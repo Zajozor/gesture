@@ -16,8 +16,15 @@ class TextItem(BaseItem):
         font_spec = self.item_spec.get('font', None)
         self.font = QFont(*font_spec) if font_spec else cn.EMOJI_FONT
 
+        self.style_sheet_active = 'color' in self.item_spec or 'bg-color' in self.item_spec
+        color_style_sheet = f'color: {self.item_spec["color"]}' if 'color' in self.item_spec else ''
+        bg_color_style_sheet = f'background-color: {self.item_spec["bg-color"]}' if 'bg-color' in self.item_spec else ''
+        self.style_sheet = f'QLabel {{ {color_style_sheet} {bg_color_style_sheet} }}'
+
     def get_widget(self) -> Union[QWidget, None]:
         label = QLabel(self.text)
+        if self.style_sheet_active:
+            label.setStyleSheet(self.style_sheet)
         label.setAlignment(Qt.AlignHCenter)
         label.setFont(self.font)
         return label
