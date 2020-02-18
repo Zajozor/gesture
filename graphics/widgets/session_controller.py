@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QVBoxLayout, QLab
 import constants as cn
 from graphics.widgets.session.slide import Slide
 from graphics.widgets.session.storage import SessionStorage
-from utils import logger
+from utils import logger, application_state
 
 
 class SessionController(QWidget):
@@ -66,6 +66,7 @@ class SessionController(QWidget):
     def play_session(self, session):
         self.stacked_layout.setCurrentIndex(1)
         self.session_active = True
+        application_state.get_main_window().set_tab_switching_enabled(False)
 
         with open(cn.SESSIONS_FOLDER / f'{session}.yml') as session_file:
             try:
@@ -93,6 +94,7 @@ class SessionController(QWidget):
             if current_session_index == session_length:
                 self.stacked_layout.setCurrentIndex(0)
                 self.session_active = False
+                application_state.get_main_window().set_tab_switching_enabled(True)
                 return
 
             slide_spec = session_spec['slides'][current_session_index]

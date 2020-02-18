@@ -36,6 +36,9 @@ class DataRouter:
     def add_consumer(self, consumer: ConsumerMixin):
         self._consumers.append(consumer)
 
+    def remove_consumer(self, consumer: ConsumerMixin):
+        self._consumers.remove(consumer)
+
     def start(self, threaded: bool):
         def update():
             while self.active:

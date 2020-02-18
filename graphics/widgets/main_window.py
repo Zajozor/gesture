@@ -1,5 +1,6 @@
 import warnings
 
+from graphics.widgets.recording_controller import RecordingController
 from graphics.widgets.session_controller import SessionController
 from utils import application_state
 
@@ -14,9 +15,8 @@ from graphics.widgets.data_viewer import DataViewer  # noqa: E402
 from graphics.widgets.serial_port_controller import SerialPortController  # noqa: E402
 from input.data_router import DataRouter  # noqa: E402
 from input.serial_port_parser import SerialPortParser  # noqa: E402
-from processing.consumers.recording_consumer import RecordingConsumer  # noqa: E402
 
-from processing.consumers.signal_grid_consumer import DynamicSignalWidgetConsumer  # noqa: E402
+from processing.consumers.dynamic_signal_widget import DynamicSignalWidgetConsumer  # noqa: E402
 
 
 class MainWindow(QTabWidget):
@@ -45,9 +45,9 @@ class MainWindow(QTabWidget):
         canvas_consumer = DynamicSignalWidgetConsumer()
         self.data_router.add_consumer(canvas_consumer)
         layout.addWidget(canvas_consumer.native)
-        recording_consumer = RecordingConsumer()
-        self.data_router.add_consumer(recording_consumer)
-        layout.addWidget(recording_consumer)
+        recording_controller = RecordingController()
+        self.data_router.add_consumer(recording_controller.consumer)
+        layout.addWidget(recording_controller)
 
         recording_tab = QWidget()
         recording_tab.setLayout(layout)
