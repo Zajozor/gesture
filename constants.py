@@ -34,9 +34,10 @@ DATA_FOLDER = BASE_DIR / 'data' / 'gestures'
 MODELS_FOLDER = BASE_DIR / 'resources' / 'render'
 SESSIONS_FOLDER = BASE_DIR / 'resources' / 'sessions'
 GESTURE_PREFIX = 'g'
-GESTURE_NAME_SEPARATOR = '-'
+SESSION_PREFIX = 's'
+FILE_NAME_SEPARATOR = '-'
 GESTURE_META_SEPARATOR = ','
-GESTURE_NAME_DATETIME_FORMAT = '%Y%m%d-%H%M%S'
+FILE_NAME_DATETIME_FORMAT = '%Y%m%d-%H%M%S'
 GESTURE_NAME_TYPE_INDEX = 1
 TRASH_GESTURE_INDEX = -1
 
@@ -63,9 +64,9 @@ GESTURES = [
     '20 Trash',
 ]
 
-ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_'): name
+ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(FILE_NAME_SEPARATOR, '_'): name
                             for name in GESTURES}
-NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(GESTURE_NAME_SEPARATOR, '_')
+NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(FILE_NAME_SEPARATOR, '_')
                             for name in GESTURES}
 NICE_TO_NUMBERS_GESTURES = {name: i for (i, name) in enumerate(GESTURES)}
 

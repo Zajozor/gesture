@@ -21,6 +21,7 @@ class StaticSignalWidget(pg.GraphicsView):
         self.graphics_layout.setSpacing(0)
         # TODO possibly reduce the space taken by the axes a little more
         self.mouse_press_callback = None
+        self.data = np.empty(0)
 
     def plot_data(self, data: np.ndarray, length=None, rows=1, cols=None):
         """
@@ -29,6 +30,7 @@ class StaticSignalWidget(pg.GraphicsView):
         :param rows: Amount of rows in the canvas.
         :param cols: Amount of columns in the canvas (calculated if None)
         """
+        self.data = data
         assert len(data.shape) == 3
 
         if length is None:

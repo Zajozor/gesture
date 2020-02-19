@@ -69,7 +69,7 @@ class DataViewer(QWidget):
 
         gesture_tree = {}
         for gesture in gestures:
-            parts = gesture.split(cn.GESTURE_NAME_SEPARATOR)
+            parts = gesture.split(cn.FILE_NAME_SEPARATOR)
             if len(parts) < 3 or parts[0] != cn.GESTURE_PREFIX:
                 logger.debug(f'Leaving out file {gesture}, unknown naming.')
                 continue
@@ -104,7 +104,7 @@ class DataViewer(QWidget):
         if name[-2] in cn.NICE_TO_ESCAPED_GESTURES:
             name[-2] = cn.NICE_TO_ESCAPED_GESTURES[name[-2]]
 
-        return cn.GESTURE_NAME_SEPARATOR.join(name[::-1])
+        return cn.FILE_NAME_SEPARATOR.join(name[::-1])
 
     def show_selected(self, model_index):
         is_leaf = not model_index.child(0, 0).isValid()

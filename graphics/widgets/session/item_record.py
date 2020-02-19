@@ -1,5 +1,6 @@
 from typing import Union, List
 
+import numpy as np
 from PyQt5.QtCore import QObject, Qt
 from PyQt5.QtGui import QKeyEvent
 from PyQt5.QtWidgets import QWidget, QVBoxLayout
@@ -9,7 +10,7 @@ from graphics.widgets.session.item_base import BaseItem
 from graphics.widgets.signal_static import StaticSignalWidget
 from input.data_router import DataRouter
 from processing.consumers.recording import RecordingConsumer
-from utils import application_state
+from utils import application_state, logger
 
 
 class RecordItem(BaseItem):
@@ -23,6 +24,7 @@ class RecordItem(BaseItem):
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setAlignment(Qt.AlignTop)
 
+        self.name = self.item_spec['name']
         self.signal_count = self.item_spec['count']
         self.signal_widgets: List[StaticSignalWidget] = [
             StaticSignalWidget() for _ in range(self.signal_count)
@@ -75,5 +77,10 @@ class RecordItem(BaseItem):
         return widget
 
     def finish(self):
+        if self.name in self.storage.data:
+            logger.warning(f'Overwriting already present key: `{self.name}`!')
+        self.storage.data[self.name] = np.array([
+            signal.data for signal in self.signal_widgets
+        ])
         self.data_router.remove_consumer(self.recording_consumer)
         GlobalEventFilter.get_instance().remove_key_hook(Qt.Key_Space, self.space_callback)

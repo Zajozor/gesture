@@ -29,7 +29,7 @@ class Renamer(QDialog):
         new_name_layout.addWidget(self.new_name_label)
 
         self.new_name_parts = [
-            QLineEdit(part) for part in old_name.split(cn.GESTURE_NAME_SEPARATOR)
+            QLineEdit(part) for part in old_name.split(cn.FILE_NAME_SEPARATOR)
         ]
 
         new_type_layout.addWidget(QLabel('Change gesture type:'))
@@ -38,7 +38,7 @@ class Renamer(QDialog):
         new_type_combo_box.addItems(cn.GESTURES)
 
         # This may cause weird behaviour if you name files maliciously, but we ignore that for now
-        if len(old_name.split(cn.GESTURE_NAME_SEPARATOR)) > cn.GESTURE_NAME_TYPE_INDEX:
+        if len(old_name.split(cn.FILE_NAME_SEPARATOR)) > cn.GESTURE_NAME_TYPE_INDEX:
             layout.addLayout(new_type_layout)
             escaped_name = self.new_name_parts[cn.GESTURE_NAME_TYPE_INDEX].text()
             if escaped_name in cn.ESCAPED_TO_NICE_GESTURES:
@@ -68,7 +68,7 @@ class Renamer(QDialog):
 
     def refresh_new_name(self):
         self.new_name_label.setText(
-            cn.GESTURE_NAME_SEPARATOR.join(map(lambda line_edit: line_edit.text(), self.new_name_parts))
+            cn.FILE_NAME_SEPARATOR.join(map(lambda line_edit: line_edit.text(), self.new_name_parts))
         )
 
     def confirm_rename(self):
@@ -77,9 +77,9 @@ class Renamer(QDialog):
 
     @staticmethod
     def trash_gesture(old_name):
-        parts = old_name.split(cn.GESTURE_NAME_SEPARATOR)
+        parts = old_name.split(cn.FILE_NAME_SEPARATOR)
         parts[cn.GESTURE_NAME_TYPE_INDEX] = cn.NICE_TO_ESCAPED_GESTURES[cn.GESTURES[cn.TRASH_GESTURE_INDEX]]
-        return Renamer.rename_gesture(old_name, cn.GESTURE_NAME_SEPARATOR.join(parts))
+        return Renamer.rename_gesture(old_name, cn.FILE_NAME_SEPARATOR.join(parts))
 
     @staticmethod
     def rename_gesture(old_name, new_name):

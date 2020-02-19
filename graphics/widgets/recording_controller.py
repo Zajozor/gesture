@@ -181,7 +181,7 @@ class RecordingController(QWidget):
         self.consumer.start_recording()
         self.start_button.setEnabled(False)
         self.stop_button.setEnabled(True)
-        self.gesture_record_time = time.strftime(cn.GESTURE_NAME_DATETIME_FORMAT)
+        self.gesture_record_time = time.strftime(cn.FILE_NAME_DATETIME_FORMAT)
 
     def stop_recording(self):
         self.consumer.stop_recording()
@@ -219,7 +219,7 @@ class RecordingController(QWidget):
 
     @property
     def full_gesture_filename(self):
-        return cn.GESTURE_NAME_SEPARATOR.join([
+        return cn.FILE_NAME_SEPARATOR.join([
             cn.GESTURE_PREFIX,
             cn.NICE_TO_ESCAPED_GESTURES[self.readable_gesture_name],
             self.user_meta_edit.text() + (
