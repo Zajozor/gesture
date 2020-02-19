@@ -191,8 +191,10 @@ class RecordingController(QWidget):
         if self.save_checkbox.isChecked():
             self.save_gesture_async()
         if self.show_checkbox.isChecked():
+            signal_widget = StaticSignalWidget()
+            signal_widget.plot_data(self.consumer.gesture_data)
             self.add_displayed_signal(
-                StaticSignalWidget(self.consumer.gesture_data),
+                signal_widget,
                 self.readable_gesture_name,
                 self.gesture_record_time,
             )

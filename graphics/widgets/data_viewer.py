@@ -116,8 +116,9 @@ class DataViewer(QWidget):
         selected_file = cn.DATA_FOLDER / filename
         data = np.load(selected_file)
 
-        widget = StaticSignalWidget(data)
-        widget = NamedExtension(filename, widget)
+        signal_widget = StaticSignalWidget()
+        signal_widget.plot_data(data)
+        widget = NamedExtension(filename, signal_widget)
         widget = BlinkExtension(widget)
         widget = ClosableExtension(widget)
         widget.setMinimumWidth(600)

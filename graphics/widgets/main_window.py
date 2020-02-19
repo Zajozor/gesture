@@ -35,7 +35,7 @@ class MainWindow(QTabWidget):
         self.data_router.start(threaded=True)
 
     def init_ui(self):
-        self.setMinimumSize(1200, 650)
+        self.setMinimumSize(1200, 750)
 
         spc = SerialPortController(self.serial_port_parser)
         self.addTab(spc, 'Serial port control')

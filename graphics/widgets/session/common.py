@@ -4,6 +4,7 @@ from typing import Union, List
 from PyQt5.QtWidgets import QHBoxLayout, QWidget
 
 from graphics.widgets.session.item_base import BaseItem
+from graphics.widgets.session.item_gif import GIFItem
 from graphics.widgets.session.item_image import ImageItem
 from graphics.widgets.session.item_input import InputItem
 from graphics.widgets.session.item_pause import PauseItem
@@ -39,6 +40,8 @@ class HStackItem(BaseItem):
 
     def get_widget(self) -> Union[QWidget, None]:
         layout = QHBoxLayout()
+        layout.setSpacing(25)
+        layout.setContentsMargins(0, 0, 0, 0)
         for sub_item in self.sub_items:
             sub_widget = sub_item.get_widget()
             if sub_widget:
@@ -62,4 +65,5 @@ ITEM_CLASSES: Dict[str, Type[BaseItem]] = {
     'state': StateItem,
     'hstack': HStackItem,
     'pause': PauseItem,
+    'gif': GIFItem,
 }
