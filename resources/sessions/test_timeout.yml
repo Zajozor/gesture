@@ -1,0 +1,19 @@
+---
+name: Basic testing session
+slides:
+  - items:
+      - {type: text, text: "waiting 3"}
+      - {type: pause, timeout-ms: 3000}
+  - items:
+      - {type: text, text: "waiting 3 no progress"}
+      - {type: pause, timeout-ms: 3000, show: false}
+  - items:
+      - {type: text, text: "nowait"}
+  - items:
+      - {type: text, text: "waiting 5 no advance"}
+      - {type: pause, timeout-ms: 5000}
+    disable-advance: true
+  - items:
+      - {type: text, text: "end"}
+
+...

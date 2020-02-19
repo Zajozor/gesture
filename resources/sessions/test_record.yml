@@ -1,0 +1,12 @@
+---
+name: Basic testing session
+slides:
+  - items:
+      - {type: signal}
+      - type: hstack
+        items:
+          - {type: text, text: "here you see the stuff"}
+          - {type: record, count: 3, name: "First LefT"}
+  - items:
+      - {type: text, text: Bye}
+...

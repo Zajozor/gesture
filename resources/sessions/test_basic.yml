@@ -1,0 +1,28 @@
+---
+name: Basic testing session
+slides:
+  - items:
+      - {type: state, version: 1.0}
+      - {type: text, text: Heya}
+      - {type: image, image: person.jpeg}
+      - {type: text, text: "red it is", color: blue}
+      - {type: text, text: "check this out", bg-color: "#CCC"}
+      - type: hstack
+        items:
+          - {type: text, text: "really ?", font: [Menlo, 54]}
+          - {type: text, text: "reallyyy ?", font: ["Comic sans", 54]}
+  - items:
+      - {type: text, text: "really ?", font: [Menlo, 54]}
+      - {type: text, text: "reallyyy ?", font: ["Comic sans", 54]}
+      - {type: input, name: length, label: Length}
+      - {type: input, name: stuff, label: "What do you think"}
+  - items:
+      - {type: signal}
+      - {type: record, count: 2, name: "yes"}
+      - {type: gesture}
+  - items:
+      - {type: signal}
+      - {type: gesture}
+  - items:
+      - {type: text, text: Bye}
+...

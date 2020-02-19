@@ -1,5 +1,6 @@
 from typing import Union
 
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QLabel, QHBoxLayout, QLineEdit, QWidget
 
 from graphics.widgets.session.item_base import BaseItem
@@ -15,9 +16,11 @@ class InputItem(BaseItem):
         layout = QHBoxLayout()
         layout.addWidget(QLabel(self.item_spec.get('label', '')))
         layout.addWidget(self.line_edit)
+        layout.setAlignment(Qt.AlignCenter)
 
         widget = QWidget()
         widget.setLayout(layout)
+        widget.setMaximumWidth(600)
         return widget
 
     def finish(self):

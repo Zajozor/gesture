@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Union
 
 from PyQt5.QtCore import Qt
@@ -13,7 +14,7 @@ MEDIA_FOLDER = cn.SESSIONS_FOLDER / 'media'
 class GIFItem(BaseItem):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.gif_path = self.item_spec['gif']
+        self.gif_path = Path(cn.MODELS_FOLDER) / f'{self.item_spec["gif"]}.gif'
         self.width = self.item_spec.get('width', cn.GIF_RECORDING_SIZE[0] * cn.GIF_DISPLAY_SIZE)
         self.height = self.item_spec.get('height', cn.GIF_RECORDING_SIZE[1] * cn.GIF_DISPLAY_SIZE)
 
