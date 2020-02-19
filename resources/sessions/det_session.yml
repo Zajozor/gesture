@@ -19,15 +19,22 @@ slides:
         text: |
           During the session, you will be asked to record different gestures,
           each of them possibly multiple times.
+
+          For each gesture you will be presented with an animation
+          of the movement and the name of the gesture.
+          Do not worry too much about exact interpretation,
+          perform what you naturally feel the animation depicts.
+
           Between different gestures, you will be forced to take a break,
           to keep the measurements independent.
+
           On the next slide, you shall see an example to get hold of it,
           please equip the glove now if you haven't already.
   - items:
       - type: hstack
         items:
           - {type: signal}
-          - {type: gif, gif: 03_two_finger_swipe_left}
+          - {type: gif, id: 3}
       - type: hstack
         items:
           - type: text
@@ -40,11 +47,10 @@ slides:
 
               Next to it you see an animation depicting what
               movement you should perform.
-              Do not worry too much about exact interpretation,
-              perform what you naturally feel the animation depicts.
 
-              Try pressing space, performing the gesture and then
-              releasing space.
+              Try pressing space, performing the gesture once
+              (see the progress bar)
+              and then releasing space.
               On the right you can see your recorded gesture.
               Repeat it for each of the windows.
 
@@ -67,8 +73,8 @@ slides:
       - {type: signal}
       - type: hstack
         items:
-          - {type: gif, gif: 07_pinch_closer}
-          - {type: record, count: 3, name: 07_pinch_closer}
+          - {type: gif, id: 7}
+          - {type: record, count: 3, name: 7}
   - items:
       - {type: pause, timeout-ms: 3000}
     disable_advance: true
@@ -76,8 +82,8 @@ slides:
       - {type: signal}
       - type: hstack
         items:
-          - {type: gif, gif: 10_grab}
-          - {type: record, count: 3, name: 10_grab}
+          - {type: gif, id: 10}
+          - {type: record, count: 3, name: 10}
   - items:
       - {type: pause, timeout-ms: 3000}
     disable_advance: true
@@ -85,8 +91,8 @@ slides:
       - {type: signal}
       - type: hstack
         items:
-          - {type: gif, gif: 15_peace}
-          - {type: record, count: 3, name: 15_peace}
+          - {type: gif, id: 15}
+          - {type: record, count: 3, name: 15}
   - items:
       - {type: pause, timeout-ms: 3000}
     disable_advance: true
@@ -94,8 +100,8 @@ slides:
       - {type: signal}
       - type: hstack
         items:
-          - {type: gif, gif: 02_index_swipe_right}
-          - {type: record, count: 3, name: 02_index_swipe_right}
+          - {type: gif, id: 2}
+          - {type: record, count: 3, name: 2}
   - items:
       - {type: pause, timeout-ms: 3000}
     disable_advance: true
@@ -103,8 +109,8 @@ slides:
       - {type: signal}
       - type: hstack
         items:
-          - {type: gif, gif: 09_thumb_double_tap}
-          - {type: record, count: 3, name: 09_thumb_double_tap}
+          - {type: gif, id: 9}
+          - {type: record, count: 3, name: 9}
   - items:
       - type: text
         text: |
