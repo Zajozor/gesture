@@ -6,7 +6,8 @@ from random import choice
 import yaml
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QListWidget, QStackedLayout
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QListWidget, QStackedLayout, \
+    QProgressBar
 from yaml.parser import ParserError
 
 import constants as cn
@@ -32,7 +33,8 @@ class SessionController(QWidget):
         self.selection_layout.setSpacing(50)
 
         self.play_layout = QVBoxLayout()
-        self.play_layout.setSpacing(25)
+        self.play_layout.setSpacing(5)
+        self.play_layout.setContentsMargins(0, 0, 0, 0)
         self.play_layout.setAlignment(Qt.AlignCenter)
 
         self.stacked_layout = QStackedLayout()
@@ -41,7 +43,14 @@ class SessionController(QWidget):
         self.stacked_layout.addWidget(selection_layout_widget_wrapper)
 
         play_layout_widget_wrapper = QWidget()
-        play_layout_widget_wrapper.setLayout(self.play_layout)
+        outer_play_layout = QVBoxLayout()
+        outer_play_layout.setContentsMargins(0, 0, 0, 0)
+        outer_play_layout.setSpacing(5)
+        self.session_progress_bar = QProgressBar()
+        outer_play_layout.addWidget(self.session_progress_bar)
+        outer_play_layout.addLayout(self.play_layout)
+
+        play_layout_widget_wrapper.setLayout(outer_play_layout)
         self.stacked_layout.addWidget(play_layout_widget_wrapper)
 
         huge_font = QFont('Menlo', 32)
@@ -82,6 +91,7 @@ class SessionController(QWidget):
         session_spec['slides'] = SessionController.expand_slides(session_spec['slides'])
 
         session_length = len(session_spec['slides'])
+        self.session_progress_bar.setMaximum(session_length)
         current_session_index = -1
         current_slide_widget = None
         session_storage = SessionStorage()
@@ -91,6 +101,7 @@ class SessionController(QWidget):
             logger.debug(f'Storage after slide {current_session_index}: {session_storage}')
 
             current_session_index += 1
+            self.session_progress_bar.setValue(current_session_index)
 
             if current_slide_widget:
                 current_slide_widget.close()
@@ -124,6 +135,7 @@ class SessionController(QWidget):
         """
         Performs expansion upon special slide types, that repeat/shuffle somehow
         """
+
         def replace_in_slide(needle, new_value, item):
             if type(item) == list or type(item) == tuple:
                 return type(item)(map(lambda x: replace_in_slide(needle, new_value, x), item))

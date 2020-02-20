@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Union
 
 from PyQt5.QtCore import Qt, QTimer
