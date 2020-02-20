@@ -1,0 +1,48 @@
+---
+name: 2x8x3 session
+slides:
+  - items:
+      - {type: state, version: 1.0, session: eight_shuffle_twice}
+      - {type: text, text: "Welcome to a recording session and thanks for participating."}
+      - type: text
+        text: |
+          Please provide a unique identifier for yourself,
+          which you will use throughout your sessions:
+      - {type: input, name: name, label: Name}
+      - {type: input, name: note, label: "Additional note"}
+      - type: text
+        text: |
+          This session is does not include a tutorial and
+          is meant for repeated participations.
+  - shuffle: {template: "$i", values: [9, 10, 11, 12, 14, 15, 17 ,18]}
+    item:
+      items:
+        - {type: signal}
+        - type: hstack
+          items:
+            - {type: gif, id: "$i"}
+            - {type: record, count: 3, name: "$i"}
+    between:
+      items:
+        - {type: pause, timeout-ms: 2250}
+      disable_advance: true
+  - shuffle: {template: "$i", values: [9, 10, 11, 12, 14, 15, 17 ,18]}
+    item:
+      items:
+        - {type: signal}
+        - type: hstack
+          items:
+            - {type: gif, id: "$i"}
+            - {type: record, count: 3, name: "$i"}
+    between:
+      items:
+        - {type: pause, timeout-ms: 2250}
+      disable_advance: true
+  - items:
+      - type: text
+        text: |
+          Thank you for your time, by advancing to the next slide,
+          you will end the session and save your data.
+          By doing that, you agree that the data you provided shall be used
+          for research and open sourced without any license.
+...

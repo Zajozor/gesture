@@ -1,5 +1,5 @@
 ---
-name: Record five gestures session
+name: Record eight gestures session
 slides:
   - items:
       - {type: state, version: 1.0, session: eight_shuffle}
@@ -62,7 +62,7 @@ slides:
   - items:
       - {type: text, text: "This is how waiting between gestures will look like."}
       - {type: text, text: "We introduce this pause to keep measurements of each gesture independent."}
-      - {type: pause, timeout-ms: 4000}
+      - {type: pause, timeout-ms: 3000}
     disable-advance: true
   - items:
       - type: text
@@ -81,7 +81,7 @@ slides:
             - {type: record, count: 3, name: "$i"}
     between:
       items:
-        - {type: pause, timeout-ms: 3000}
+        - {type: pause, timeout-ms: 2250}
       disable_advance: true
   - items:
       - type: text
