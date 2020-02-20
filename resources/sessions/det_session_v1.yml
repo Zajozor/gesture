@@ -1,7 +1,8 @@
 ---
-name: Record two gestures session
+name: Record five gestures session
 slides:
   - items:
+      - {type: state, version: 1.0, session: five_det}
       - {type: text, text: "Welcome to a recording session and thanks for participating."}
       - type: text
         text: |

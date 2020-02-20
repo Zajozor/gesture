@@ -35,7 +35,7 @@ class RecordingController(QWidget):
         self.space_control_checkbox = QCheckBox('Use space control')
 
         self.gesture_choice = QListWidget()
-        self.user_meta_edit = QLineEdit('user')
+        self.user_name_edit = QLineEdit('user')
         self.user_meta_edit = QLineEdit('')
         self.gesture_filename_label = QLabel('')
         self.instruction_gif_label = QLabel()
@@ -117,17 +117,17 @@ class RecordingController(QWidget):
         self.space_control_checkbox.stateChanged.connect(space_control_checkbox_changed)
         session_layout.addWidget(self.space_control_checkbox)
 
-        self.gesture_choice.addItems(cn.GESTURES)
+        self.gesture_choice.addItems(map(str, cn.GESTURES))
         self.gesture_choice.setCurrentRow(0)
         self.gesture_choice.setMinimumSize(250, 250)
         # noinspection PyUnresolvedReferences
-        self.gesture_choice.currentTextChanged.connect(self.update_shown_gesture_filename)
+        self.gesture_choice.currentRowChanged.connect(self.update_shown_gesture_filename)
         session_layout.addWidget(self.gesture_choice)
 
-        self.user_meta_edit.textChanged.connect(self.update_shown_gesture_filename)
+        self.user_name_edit.textChanged.connect(self.update_shown_gesture_filename)
         user_name_edit_layout = QHBoxLayout()
         user_name_edit_layout.addWidget(QLabel('User:'))
-        user_name_edit_layout.addWidget(self.user_meta_edit)
+        user_name_edit_layout.addWidget(self.user_name_edit)
         session_layout.addLayout(user_name_edit_layout)
 
         self.user_meta_edit.textChanged.connect(self.update_shown_gesture_filename)
@@ -143,8 +143,9 @@ class RecordingController(QWidget):
     def _setup_instruction_layout(self):
         self.instruction_column_layout.addWidget(self.instruction_gif_label)
 
-        def update_shown_gif(new_gesture):
-            gif_path = cn.MODELS_FOLDER / f'{cn.NICE_TO_ESCAPED_GESTURES[new_gesture]}.gif'
+        def update_shown_gif(index):
+            gesture = cn.GESTURES[index]
+            gif_path = cn.MODELS_FOLDER / f'{gesture.slug}.gif'
             if gif_path.exists():
                 movie = QMovie(gif_path.as_posix())
                 movie.start()
@@ -152,11 +153,11 @@ class RecordingController(QWidget):
                 self.instruction_gif_label.setText('')
             else:
                 self.instruction_gif_label.setMovie(None)
-                self.instruction_gif_label.setText(f'Missing gif for "{new_gesture}".')
+                self.instruction_gif_label.setText(f'Missing gif for "{gesture.verbose_name}" - {gesture.slug}.gif')
 
         # noinspection PyUnresolvedReferences
-        self.gesture_choice.currentTextChanged.connect(update_shown_gif)
-        update_shown_gif(self.gesture_choice.selectedItems()[0].text())
+        self.gesture_choice.currentRowChanged.connect(update_shown_gif)
+        update_shown_gif(self.selected_gesture_index)
         self.instruction_gif_label.setScaledContents(True)
         self.instruction_gif_label.setFixedSize(cn.GIF_RECORDING_SIZE[0] * cn.GIF_DISPLAY_SIZE,
                                                 cn.GIF_RECORDING_SIZE[1] * cn.GIF_DISPLAY_SIZE)
@@ -195,12 +196,12 @@ class RecordingController(QWidget):
             signal_widget.plot_data(self.consumer.gesture_data)
             self.add_displayed_signal(
                 signal_widget,
-                self.readable_gesture_name,
+                cn.GESTURES[self.selected_gesture_index].verbose_name,
                 self.gesture_record_time,
             )
 
     def save_gesture_async(self):
-        if self._recording.is_set():
+        if self.consumer.recording_active.is_set():
             logger.warning('Saving in the middle of recording.')
 
         def save_gesture(filename, gesture_name, gesture_data):
@@ -209,20 +210,20 @@ class RecordingController(QWidget):
 
         Thread(target=save_gesture, args=(
             self.full_gesture_filename,
-            self.readable_gesture_name,
-            self.gesture_data[:self.current_gesture_index]
+            cn.GESTURES[self.selected_gesture_index].verbose_name,
+            self.consumer.gesture_data
         )).start()
 
     @property
-    def readable_gesture_name(self):
-        return self.gesture_choice.selectedItems()[0].text()
+    def selected_gesture_index(self):
+        return self.gesture_choice.selectedIndexes()[0].row()
 
     @property
     def full_gesture_filename(self):
         return cn.FILE_NAME_SEPARATOR.join([
             cn.GESTURE_PREFIX,
-            cn.NICE_TO_ESCAPED_GESTURES[self.readable_gesture_name],
-            self.user_meta_edit.text() + (
+            str(self.selected_gesture_index),
+            self.user_name_edit.text() + (
                 (cn.GESTURE_META_SEPARATOR + self.user_meta_edit.text())
                 if self.user_meta_edit.text() else ''
             ),

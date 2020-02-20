@@ -15,9 +15,9 @@ class GIFItem(BaseItem):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.gesture_id = self.item_spec['id']
-        self.verbose_name = cn.GESTURES[self.gesture_id - 1].split(' ', 1)[1]
+        self.verbose_name = cn.GESTURES[self.gesture_id - 1].verbose_name
+        self.gif_path = cn.MODELS_FOLDER / f'{cn.GESTURES[self.gesture_id - 1].slug}.gif'
 
-        self.gif_path = Path(cn.MODELS_FOLDER) / f'{cn.NICE_TO_ESCAPED_GESTURES[cn.GESTURES[self.gesture_id - 1]]}.gif'
         if not self.gif_path.exists():
             raise ValueError(f'Missing gif at {self.gif_path}.')
         self.width = self.item_spec.get('width', cn.GIF_RECORDING_SIZE[0] * cn.GIF_DISPLAY_SIZE)

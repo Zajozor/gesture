@@ -71,11 +71,16 @@ class DataViewer(QWidget):
         for gesture in gestures:
             parts = gesture.split(cn.FILE_NAME_SEPARATOR)
             if len(parts) < 3 or (parts[0] != cn.GESTURE_PREFIX and parts[0] != cn.SESSION_PREFIX):
-                logger.debug(f'Leaving out file {gesture}, unknown naming.')
+                logger.debug(f'Skipping file {gesture}, unknown naming.')
                 continue
 
-            if parts[1] in cn.ESCAPED_TO_NICE_GESTURES:
-                parts[1] = cn.ESCAPED_TO_NICE_GESTURES[parts[1]]
+            index = int(parts[1])
+            if index < 0 or index >= len(cn.GESTURES):
+                logger.debug(f'Invalid index on {gesture}, skipping.')
+                continue
+
+            gesture = cn.GESTURES[index]
+            parts[1] = str(gesture)
 
             current_node = gesture_tree
             for part in parts[1:]:
@@ -101,9 +106,10 @@ class DataViewer(QWidget):
             node = node.parent()
         name.append(cn.GESTURE_PREFIX)
 
-        if name[-2] in cn.NICE_TO_ESCAPED_GESTURES:
-            name[-2] = cn.NICE_TO_ESCAPED_GESTURES[name[-2]]
-
+        # TODO this could be nicer
+        for i, gesture_spec in enumerate(cn.GESTURES):
+            if str(gesture_spec) == name[-2]:
+                name[-2] = str(i)
         return cn.FILE_NAME_SEPARATOR.join(name[::-1])
 
     def show_selected(self, model_index):

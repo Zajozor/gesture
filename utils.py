@@ -28,3 +28,17 @@ class ApplicationState:
 
 
 application_state = ApplicationState()
+
+
+class Gesture:
+    def __init__(self, index, slug, verbose_name):
+        self.index = index
+        self._slug = slug
+        self.verbose_name = verbose_name
+
+    def __str__(self):
+        return f'{self.index:2d} {self.verbose_name}'
+
+    @property
+    def slug(self):
+        return f'{self.index:02}_{self._slug}'

@@ -3,6 +3,7 @@ from pathlib import Path
 from PyQt5.QtGui import QFont
 
 from processing.consumers.cell import CellContent
+from utils import Gesture
 
 DATA_NORMALIZATION_COEFFICIENT = 5
 
@@ -42,33 +43,27 @@ GESTURE_NAME_TYPE_INDEX = 1
 TRASH_GESTURE_INDEX = -1
 
 GESTURES = [
-    '01 Index swipe left',
-    '02 Index swipe right',
-    '03 Two finger swipe left',
-    '04 Two finger swipe right',
-    '05 Hand swipe left',
-    '06 Hand swipe right',
-    '07 Pinch closer',
-    '08 Pinch away',
-    '09 Thumb double tap',
-    '10 Grab',
-    '11 Ungrab',
-    '12 Push',
-    '13 Raise up',
-    '14 Cover down',
-    '15 Peace',
-    '16 Phone',
-    '17 Metal',
-    '18 Shoot',
-    '19 Passive',
-    '20 Trash',
+    Gesture(0, 'trash', 'Trash (mistake)'),
+    Gesture(1, 'index_swipe_left', 'Index swipe left'),
+    Gesture(2, 'index_swipe_right', 'Index swipe right'),
+    Gesture(3, 'two_finger_swipe_left', 'Two finger swipe left'),
+    Gesture(4, 'two_finger_swipe_right', 'Two finger swipe right'),
+    Gesture(5, 'hand_swipe_left', 'Hand swipe left'),
+    Gesture(6, 'hand_swipe_right', 'Hand swipe right'),
+    Gesture(7, 'pinch_closer', 'Pinch closer'),
+    Gesture(8, 'pinch_away', 'Pinch away'),
+    Gesture(9, 'thumb_double_tap', 'Thumb double tap'),
+    Gesture(10, 'grab', 'Grab'),
+    Gesture(11, 'ungrab', 'Ungrab'),
+    Gesture(12, 'push', 'Push'),
+    Gesture(13, 'raise_up', 'Raise up'),
+    Gesture(14, 'page_flip', 'Page flip'),
+    Gesture(15, 'peace', 'Peace'),
+    Gesture(16, 'phone', 'Phone'),
+    Gesture(17, 'metal', 'Metal'),
+    Gesture(18, 'shoot', 'Shoot'),
+    Gesture(19, 'passive', 'Passive'),
 ]
-
-ESCAPED_TO_NICE_GESTURES = {name.lower().replace(' ', '_').replace(FILE_NAME_SEPARATOR, '_'): name
-                            for name in GESTURES}
-NICE_TO_ESCAPED_GESTURES = {name: name.lower().replace(' ', '_').replace(FILE_NAME_SEPARATOR, '_')
-                            for name in GESTURES}
-NICE_TO_NUMBERS_GESTURES = {name: i for (i, name) in enumerate(GESTURES)}
 
 EMOJI_FONT = QFont('Menlo', 24)
 
