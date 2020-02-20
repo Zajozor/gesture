@@ -1,0 +1,93 @@
+---
+name: Record five gestures session
+slides:
+  - items:
+      - {type: state, version: 1.0, session: eight_shuffle}
+      - {type: text, text: "Welcome to a recording session and thanks for participating."}
+      - type: text
+        text: |
+          Please provide a unique identifier for yourself,
+          which you will use throughout your sessions:
+      - {type: input, name: name, label: Name}
+      - {type: input, name: note, label: "Additional note"}
+      - type: text
+        text: |
+          Your recording session consists of slides, like this one.
+          To advance to the next slide anytime, press Enter,
+          but be careful, you cannot return.
+  - items:
+      - type: text
+        text: |
+          During the session, you will be asked to record eight different gestures,
+          each of them possibly multiple times.
+
+          For each gesture you will be presented with an animation
+          of the movement and the name of the gesture.
+          Do not worry too much about exact interpretation,
+          perform what you naturally feel the animation depicts.
+
+          Between different gestures, you will be forced to take a break,
+          to keep the measurements independent.
+
+          On the next slide, you shall see an example to get hold of it,
+          please equip the glove now if you haven't already.
+  - items:
+      - type: hstack
+        items:
+          - {type: signal}
+          - {type: gif, id: 3}
+      - type: hstack
+        items:
+          - type: text
+            text: |
+              This is how a typical session slide will look,
+              don't worry this one allows you to try things out,
+              and does not count into the real data.
+
+              Above you see the current data streamed from the glove.
+
+              Next to it you see an animation depicting what
+              movement you should perform.
+
+              Try pressing space, performing the gesture once
+              (see the progress bar)
+              and then releasing space.
+              On the right you can see your recorded gesture.
+              Repeat it for each of the windows.
+
+              If you made a mistake, you can click one of the windows
+              and re-record the gesture.
+              Otherwise, press enter to continue.
+          - {type: record, count: 3, name: "example"}
+  - items:
+      - {type: text, text: "This is how waiting between gestures will look like."}
+      - {type: text, text: "We introduce this pause to keep measurements of each gesture independent."}
+      - {type: pause, timeout-ms: 4000}
+    disable-advance: true
+  - items:
+      - type: text
+        text: |
+          That were all the instructions required. If you have no questions,
+          process to the next slide to begin the session.
+
+          Don't be in a hurry, take the time you need.
+  - shuffle: {template: "$i", values: [9, 10, 11, 12, 14, 15, 17 ,18]}
+    item:
+      items:
+        - {type: signal}
+        - type: hstack
+          items:
+            - {type: gif, id: "$i"}
+            - {type: record, count: 3, name: "$i"}
+    between:
+      items:
+        - {type: pause, timeout-ms: 3000}
+      disable_advance: true
+  - items:
+      - type: text
+        text: |
+          Thank you for your time, by advancing to the next slide,
+          you will end the session and save your data.
+          By doing that, you agree that the data you provided shall be used
+          for research and open sourced without any license.
+...

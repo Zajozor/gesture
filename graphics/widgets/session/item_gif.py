@@ -15,8 +15,8 @@ class GIFItem(BaseItem):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.gesture_id = self.item_spec['id']
-        self.verbose_name = cn.GESTURES[self.gesture_id - 1].verbose_name
-        self.gif_path = cn.MODELS_FOLDER / f'{cn.GESTURES[self.gesture_id - 1].slug}.gif'
+        self.verbose_name = cn.GESTURES[self.gesture_id].verbose_name
+        self.gif_path = cn.MODELS_FOLDER / f'{cn.GESTURES[self.gesture_id].slug}.gif'
 
         if not self.gif_path.exists():
             raise ValueError(f'Missing gif at {self.gif_path}.')

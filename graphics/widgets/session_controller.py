@@ -1,6 +1,7 @@
 import os
 import pickle
 import time
+from random import choice
 
 import yaml
 from PyQt5.QtCore import Qt
@@ -78,6 +79,7 @@ class SessionController(QWidget):
                 self.session_active = False
                 logger.info(f'Malformed yaml file: {session}.yml')
                 return
+        session_spec['slides'] = SessionController.expand_slides(session_spec['slides'])
 
         session_length = len(session_spec['slides'])
         current_session_index = -1
@@ -116,3 +118,38 @@ class SessionController(QWidget):
         with open(cn.DATA_FOLDER / session_name, 'wb') as f:
             pickle.dump(storage.data, f)
         logger.info(f'Successfully saved session {session_name}')
+
+    @staticmethod
+    def expand_slides(slides):
+        """
+        Performs expansion upon special slide types, that repeat/shuffle somehow
+        """
+        def replace_in_slide(needle, new_value, item):
+            if type(item) == list or type(item) == tuple:
+                return type(item)(map(lambda x: replace_in_slide(needle, new_value, x), item))
+            if type(item) == dict:
+                return dict(map(lambda x: replace_in_slide(needle, new_value, x), list(item.items())))
+            return new_value if item == needle else item
+
+        expanded_slides = []
+        for slide in slides:
+            if 'items' in slide:
+                expanded_slides.append(slide)
+                continue
+            if 'shuffle' in slide:
+                template = slide['shuffle']['template']
+                values = slide['shuffle']['values']
+                while len(values) > 0:
+                    chosen_value = choice(values)
+                    values.remove(chosen_value)
+
+                    # add slide
+                    expanded_slides.append(replace_in_slide(template, chosen_value, slide['item']))
+
+                    # remove value
+                    if len(values) > 0:
+                        expanded_slides.append(slide['between'])
+                continue
+            raise ValueError(f'Unknown slide format: {slide}')
+        print(expanded_slides)
+        return expanded_slides
