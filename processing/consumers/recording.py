@@ -24,7 +24,8 @@ class RecordingConsumer(ConsumerMixin):
 
     @property
     def gesture_data(self):
-        return self.raw_gesture_data[:self.current_gesture_index]
+        # Here we return a copy of the data, so that it remains constant (if we return only a view, it can change)
+        return np.copy(self.raw_gesture_data[:self.current_gesture_index])
 
     def start_recording(self):
         self.current_gesture_index = 0

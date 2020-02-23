@@ -77,10 +77,14 @@ class RecordItem(BaseItem):
         return widget
 
     def finish(self):
-        if self.name in self.storage.data:
-            logger.warning(f'Overwriting already present key: `{self.name}`!')
-        self.storage.data[self.name] = np.array([
-            signal.data for signal in self.signal_widgets
-        ])
+        if self.name in self.storage.data and type(self.storage.data[self.name]) != np.ndarray:
+            logger.error(f'Incompatible key already present in storage: `{self.name}`!')
+            raise ValueError(f'Key {self.name} is incompatible and already present in session storage.')
+        self.storage.data.setdefault(self.name, np.array([]))
+
+        self.storage.data[self.name] = np.concatenate((
+            self.storage.data[self.name],
+            np.array([signal.data for signal in self.signal_widgets])
+        ))
         self.data_router.remove_consumer(self.recording_consumer)
         GlobalEventFilter.get_instance().remove_key_hook(Qt.Key_Space, self.space_callback)

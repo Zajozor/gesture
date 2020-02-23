@@ -98,7 +98,6 @@ class SessionController(QWidget):
 
         def next_slide_callback(quit_session=False):
             nonlocal current_session_index, session_length, current_slide_widget
-            logger.debug(f'Storage after slide {current_session_index}: {session_storage}')
 
             current_session_index += 1
             self.session_progress_bar.setValue(current_session_index)
@@ -163,5 +162,4 @@ class SessionController(QWidget):
                         expanded_slides.append(slide['between'])
                 continue
             raise ValueError(f'Unknown slide format: {slide}')
-        print(expanded_slides)
         return expanded_slides
