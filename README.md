@@ -1,7 +1,12 @@
-# gesture
+# Gesture
 
-A simple accelerometer-based gesture recognition software.
-Under heavy development.
+A simple accelerometer-based gesture recognition framework.
+Created for a diploma thesis.
+
+Connects through serial port to a custom
+ESP8266 based device, which gathers data from five accelerometers.
+The GUI allows to record and inspect data from accelerometers,
+the processing component performs gesture classification on the data.
 
 Project is using Conda environment for package management.
 Use
@@ -14,36 +19,22 @@ The [socat](https://linux.die.net/man/1/socat)
 binary is required for simulation of the device.
 
 - [arduino](arduino) contains code used on the microprocessor
-- [graphics](graphics) contains graphics related stuff
+- [graphics](graphics) contains sources for the GUI
     - [shaders](graphics/shaders) GLSL shaders
-    - [signal_canvas.py](graphics/widgets/signal_dynamic.py) simply displays signals in a grid
+    - [extensions](graphics/widgets) Various Qt widgets used in the GUI
+    - [event_filter.py](graphics/event_filter.py) Allows registering app-wide event callbacks
+    - [styles.py](graphics/styles.py) Gathers CSS styles used in the widgets
 - [input](input) processes input from the sensor and the user
-    - [controller.py](input/controller.py) controls and runs other components
-    - [data_reader.py](input/buffered_data_router.py) reads form an input parser and shows
-      the results in a signal canvas
-    - [input_parser.py](input/serial_port_parser.py) reads data from serial port and parses them,
-      while handling encoding errors, restarts, reconnecting, etc. has only a single buffer
+    - [data_router.py](input/data_router.py) reads from a SerialPortParser and passes data to Consumers
+    - [serial_port_parser.py](input/serial_port_parser.py) reads and parses data from serial port,
+      while handling encoding errors, restarts, reconnecting, etc.
 - [processing](processing) contains components for processing the data
-    - [recorder.py](processing/consumers/recording_consumer.py) records fed gestures
-- [testing](testing) contains various resources and testing scripts
+    - [consumers](processing/consumers) consume data through DataRouter, either to display it in a GUI or
+      for further processing
+    - [loading](processing/loading) helper functions to load saved gesture/session data
+- [resources](resources) Assets for the GUI (images, models, animations) and session definitions
+- [testing](testing) example resources used during development
     - [examples](testing/examples) contains example usages of some used libraries
     - [simulate_serial.py](testing/simulate_serial.py) simulates a connected serial port
       with random data
 - [constants.py](constants.py) and [utils.py](utils.py) contain common code
-   
-   
-   
-## TODO
-
-    
-- rozmysliet si gesta
-- pocet giest medzi 5 a 20, rozmysliet si tolko aby bol aj dataset
-- ako to vobec robit, ci im dat zadanie a blbosti.. 
-  mozno nejaky guide programcek
-
-- jednoduche heuristiky, threshold, ked tak nieco zlozitejsie, import only
-- poslat mail s clankami -> top DTW a par dalsich top
-
-- serioznejsi model lstm, poslane repo spanie lezanie..
-
-
