@@ -106,10 +106,9 @@ void loop()
   Serial.write(255);
   Serial.write(0);
   Serial.write(255);
-  Serial.write(128);
   Serial.write(42);
 
-  delay(15 - (millis() - t1));
+  delay(20 - (millis() - t1));
 }
 
 // Function bodies

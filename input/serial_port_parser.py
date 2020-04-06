@@ -25,7 +25,7 @@ class SerialPortParser:
         self.serial_port_name: str = serial_port_name
         self.serial_port: Union[serial.Serial, None] = None
 
-        self.buffer: List[Tuple[float, float, float]] = [(0.0, 0.0, 0.0) for _ in range(cn.SENSOR_COUNT)]
+        self.buffer: np.ndarray = np.zeros((cn.SENSOR_COUNT, 6), dtype=cn.SENSOR_DATA_DTYPE)
         self._data_changed: List[bool] = [False] * cn.SENSOR_COUNT
 
         self.verbose: bool = verbose
@@ -51,12 +51,14 @@ class SerialPortParser:
     def init_serial(self):
         while not self.current_active_state and self.target_active_state:
             try:
+                baud_rate = cn.SIMULATED_SERIAL_PORT_BAUD_RATE \
+                    if self.serial_port_name.startswith(cn.SIMULATED_SERIAL_PORT_PREFIX) \
+                    else cn.SERIAL_PORT_BAUD_RATE
                 self.serial_port = serial.Serial(port=self.serial_port_name,
-                                                 baudrate=cn.SERIAL_PORT_BAUD_RATE,
+                                                 baudrate=baud_rate,
                                                  timeout=1000,
                                                  write_timeout=1000)
-                self.serial_port.write(b"starting")
-                self.serial_port.readline().rstrip().decode("utf-8")
+                self.serial_port.read_until(cn.SENSOR_READING_DELIMITER, 2 * cn.SENSOR_CORRECT_READING_LENGTH)
                 logger.info('Serial port successfully opened.')
                 self.current_active_state = True
             except (ValueError, serial.SerialException):
@@ -67,22 +69,24 @@ class SerialPortParser:
     def read_serial(self):
         while self.current_active_state and self.target_active_state:
             try:
-                data = self.serial_port.readline().rstrip().decode()
+                data = self.serial_port.read_until(cn.SENSOR_READING_DELIMITER, 2 * cn.SENSOR_CORRECT_READING_LENGTH)
+                data = data[:-len(cn.SENSOR_READING_DELIMITER)]
                 if self.verbose:
-                    logger.debug(f'Serial port raw received data: `{data}`')
-                data = data.split()
+                    logger.debug(f'Serial port raw received data: `{",".join([str(x) for x in data])}`')
             except (AttributeError, UnicodeDecodeError, TypeError, serial.SerialException) as e:
                 logger.warning(f'Serial reading error: {e}')
                 self.cleanup_serial()
                 break
             try:
-                sensor_id = int(data[0]) - cn.SENSOR_ID_OFFSET
-                if 0 <= sensor_id < cn.SENSOR_COUNT:
-                    self.buffer[sensor_id] = (float(data[2]), float(data[3]), float(data[4]))
+                if len(data) != cn.SENSOR_CORRECT_READING_LENGTH:
+                    raise ValueError(f'Expecting input of length {cn.SENSOR_CORRECT_READING_LENGTH}.')
+                self.buffer = np.frombuffer(data, dtype=cn.SENSOR_DATA_DTYPE).reshape(self.buffer.shape)
+
+                for sensor_id in range(0, cn.SENSOR_COUNT):
                     self._data_changed[sensor_id] = True
             except (ValueError, IndexError, TypeError):
                 # On format errors, we do not restart the serial
-                logger.warning(f'Invalid data received: {data}')
+                logger.warning(f'Invalid data received: `{",".join([str(x) for x in data])}`')
 
     def cleanup_serial(self):
         if self.current_active_state:
@@ -105,7 +109,7 @@ class SerialPortParser:
     @property
     def data(self):
         self._data_changed = [False] * cn.SENSOR_COUNT
-        return np.array(self.buffer) / cn.DATA_NORMALIZATION_COEFFICIENT
+        return self.buffer / cn.DATA_NORMALIZATION_COEFFICIENT
 
     @property
     def data_changed(self):

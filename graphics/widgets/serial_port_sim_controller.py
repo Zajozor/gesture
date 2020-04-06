@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QApplication, QLabel, QVBoxLayout, QPushButton, QLineEdit, QHBoxLayout, QSlider
 
 import constants as cn
@@ -23,10 +24,9 @@ class SerialPortSimulatorController(QWidget):
             self.serial_simulator.exit_requested = not self.serial_simulator.exit_requested
             if not self.serial_simulator.exit_requested:
                 self.serial_simulator.start()
-                serial_port_name_edit.setText(self.serial_simulator.left)
+                serial_port_name_edit.setText(self.serial_simulator.output_socket_for_app)
                 simulation_info_label.setText('Running')
-                toggle_simulation_button.setEnabled(False)
-                toggle_simulation_button.setText('Stop serial simulator (not yet implemented)')
+                toggle_simulation_button.setText('Stop serial simulator')
             else:
                 simulation_info_label.setText('Not running')
                 toggle_simulation_button.setText('Start serial simulator')
@@ -41,7 +41,7 @@ class SerialPortSimulatorController(QWidget):
 
         # Frequency change control
 
-        current_frequency_slider = QSlider()
+        current_frequency_slider = QSlider(Qt.Horizontal)
         current_frequency_slider.setRange(2, 50)
         current_frequency_slider.setSliderPosition(cn.SIMULATOR_FREQUENCY)
         current_frequency_label = QLabel(f'{current_frequency_slider.sliderPosition()}')
