@@ -4,4 +4,4 @@ __pycache__
 data/
 node_modules
 *.blend1
-/arduino/SiLabsUSBDriverDisk.dmg
+/firmware/SiLabsUSBDriverDisk.dmg

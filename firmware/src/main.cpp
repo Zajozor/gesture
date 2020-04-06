@@ -78,8 +78,6 @@ void loop()
     multiplexer_select(i);
     sensor.getMotion6(&data.accX, &data.accY, &data.accZ, &data.gyrX, &data.gyrY, &data.gyrZ);
 
-    Serial.write(i);
-
     data.accX -= offsets[i].accX;
     data.accY -= offsets[i].accY;
     data.accZ -= offsets[i].accZ;
@@ -93,9 +91,6 @@ void loop()
     Serial.write(data.gyrX >> 8); Serial.write(data.gyrX & 0xFF);
     Serial.write(data.gyrY >> 8); Serial.write(data.gyrY & 0xFF);
     Serial.write(data.gyrZ >> 8); Serial.write(data.gyrZ & 0xFF);
-    // This serves as a separator to find the edge easier
-    Serial.write(255);
-    Serial.println();
 
     // For readable output:
     // Serial.print("Sensor "); Serial.print(i);
@@ -107,6 +102,13 @@ void loop()
     // Serial.print(data.gyrY - offsets[i].gyrY); Serial.print("\t");
     // Serial.println(data.gyrZ - offsets[i].gyrZ);
   }
+  // This serves as a separator to find the reading edge easier
+  Serial.write(255);
+  Serial.write(0);
+  Serial.write(255);
+  Serial.write(128);
+  Serial.write(42);
+
   delay(15 - (millis() - t1));
 }
 
