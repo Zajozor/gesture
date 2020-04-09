@@ -18,6 +18,7 @@ SENSOR_COUNT = 5
 SENSOR_ID_OFFSET = 2  # This is the i2c multiplexer id offset
 SENSOR_READING_DELIMITER = b'\xff\x00\xff\x2a'
 SENSOR_CORRECT_READING_LENGTH = 60
+SENSOR_CHANNEL_COUNT = 6
 SENSOR_DATA_DTYPE = np.dtype(np.int16).newbyteorder('>')
 
 SENSOR_UPDATE_LOG_FREQUENCY = 1  # Seconds
@@ -27,9 +28,14 @@ class COLORS:
     RED = (1., 0., 0.)
     GREEN = (0., 1., 0.)
     BLUE = (0., 0., 1.)
+    PURPLE = (0.2, 0., 0.6)
+    MAGENTA = (1., 0., 1.)
+    CYAN = (0, 1., 1.)
 
-    DEFAULT_SIGNAL_COLORS = [RED, GREEN, BLUE]
-    PEN_COLORS = ['r', 'g', 'b']
+    # Dynamic canvas
+    DEFAULT_SIGNAL_COLORS = [RED, GREEN, BLUE, CYAN, MAGENTA, PURPLE]
+    # Static canvas
+    PEN_COLORS = ['r', 'g', 'b', 'c', 'm', PURPLE]
 
 
 DEFAULT_WINDOW_SIZE = (800, 150)
@@ -69,6 +75,14 @@ GESTURES = [
     Gesture(17, 'metal', 'Metal'),
     Gesture(18, 'shoot', 'Shoot'),
     Gesture(19, 'passive', 'Passive'),
+    Gesture(20, 'diag', ''),
+    Gesture(21, 'square', ''),
+    Gesture(22, 'right', ''),
+    Gesture(23, 'left', ''),
+    Gesture(24, 'up', ''),
+    Gesture(25, 'down', ''),
+    Gesture(26, 'cwise', ''),
+    Gesture(27, 'ccwise', ''),
 ]
 
 EMOJI_FONT = QFont('Menlo', 24)
@@ -81,4 +95,6 @@ RECORDING_MAX_LENGTH = 1000
 
 CONSOLE_LOGGER_BUFFER_INTERVAL = 3
 
-DEFAULT_CELL_CONTENTS = tuple(CellContent(input_id=i, col=i) for i in range(SENSOR_COUNT))
+DEFAULT_CELL_CONTENTS = tuple(
+    CellContent(input_id=i, col=i, row=0, count=SENSOR_CHANNEL_COUNT) for i in range(SENSOR_COUNT)
+)

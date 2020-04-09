@@ -25,7 +25,7 @@ class StaticSignalWidget(pg.GraphicsView):
 
     def plot_data(self, data: np.ndarray, length=None, rows=1, cols=None):
         """
-        :param data: A three dimensional array of shape [time, sensor/signal, axis]
+        :param data: A three dimensional array of shape [time, sensor/signal, channel/axis]
         :param length: length to show (calculated if None)
         :param rows: Amount of rows in the canvas.
         :param cols: Amount of columns in the canvas (calculated if None)
@@ -37,14 +37,14 @@ class StaticSignalWidget(pg.GraphicsView):
             length = data.shape[0]
         if cols is None:
             cols = math.ceil(data.shape[1] / rows)
-        assert data.shape[2] == 3  # Three different axes
+        assert data.shape[2] == cn.SENSOR_CHANNEL_COUNT
 
         self.graphics_layout.clear()
         for i in range(rows):
             for j in range(cols):
                 signal = i * rows + j
                 p = self.graphics_layout.addPlot()
-                for k in range(3):
+                for k in range(cn.SENSOR_CHANNEL_COUNT):
                     p.plot(data[:length, signal, k], pen=cn.COLORS.PEN_COLORS[k])
                 if j > 0:
                     p.hideAxis('left')
@@ -65,7 +65,7 @@ class StaticSignalWidget(pg.GraphicsView):
     #         for j in range(self.cols):
     #             signal = i * self.rows + j
     #             p = win.addPlot()
-    #             for k in range(3):
+    #             for k in range(cn.SENSOR_CHANNEL_COUNT):
     #                 p.plot(self.data[:self.length, signal, k], pen=cn.COLORS.PEN_COLORS[k])
     #     win.show()
     #     super().mouseDoubleClickEvent(event)
@@ -75,6 +75,6 @@ class StaticSignalWidget(pg.GraphicsView):
 if __name__ == '__main__':
     app = QApplication([])
     main_widget = StaticSignalWidget()
-    main_widget.plot_data(np.random.rand(150, 5, 3))
+    main_widget.plot_data(np.random.rand(150, 5, 6))
     main_widget.show()
     app.exec_()

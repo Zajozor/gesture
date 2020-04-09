@@ -19,7 +19,7 @@ class RecordingConsumer(ConsumerMixin):
         self.sensor_count: int = sensor_count
 
         self.recording_active: Event = Event()
-        self.raw_gesture_data: np.ndarray = np.empty((self.max_length, sensor_count, 3))
+        self.raw_gesture_data: np.ndarray = np.empty((self.max_length, sensor_count, cn.SENSOR_CHANNEL_COUNT))
         self.current_gesture_index: int = 0
 
     @property

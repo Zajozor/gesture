@@ -15,7 +15,7 @@ class ConsumerMixin:
         synchronously in a DataRouter. The core processing done by the consumer
         should happen at least in a different thread.
 
-        :param data: numpy array of size (cn.SENSOR_COUNT, 3) containing floats
+        :param data: numpy array of size (cn.SENSOR_COUNT, cn.SENSOR_CHANNEL_COUNT) containing floats
         :param data_changed: list of booleans containing which data is actually new
         """
         raise NotImplementedError
