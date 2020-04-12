@@ -1,5 +1,4 @@
 from threading import Event
-from typing import List
 
 import numpy as np
 
@@ -34,9 +33,9 @@ class RecordingConsumer(ConsumerMixin):
     def stop_recording(self):
         self.recording_active.clear()
 
-    def receive_data(self, data: np.ndarray, data_changed: List[bool]):
+    def receive_data(self, data: np.ndarray, _):
         if self.recording_active.is_set():
-            self.raw_gesture_data[self.current_gesture_index] = data
+            self.raw_gesture_data[self.current_gesture_index] = data.copy()
             self.current_gesture_index += 1
             if self.current_gesture_index >= self.max_length:
                 logger.error('Maximum gesture length exceeded, overflowing..')

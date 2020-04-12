@@ -1,6 +1,6 @@
 import time
 from threading import Thread
-from typing import Union, List, Tuple
+from typing import Union
 
 import numpy as np
 import serial
@@ -26,7 +26,7 @@ class SerialPortParser:
         self.serial_port: Union[serial.Serial, None] = None
 
         self.buffer: np.ndarray = np.zeros((cn.SENSOR_COUNT, 6), dtype=cn.SENSOR_DATA_DTYPE)
-        self._data_changed: List[bool] = [False] * cn.SENSOR_COUNT
+        self._data_changed: bool = False
 
         self.verbose: bool = verbose
         self.current_active_state: bool = False
@@ -81,9 +81,7 @@ class SerialPortParser:
                 if len(data) != cn.SENSOR_CORRECT_READING_LENGTH:
                     raise ValueError(f'Expecting input of length {cn.SENSOR_CORRECT_READING_LENGTH}.')
                 self.buffer = np.frombuffer(data, dtype=cn.SENSOR_DATA_DTYPE).reshape(self.buffer.shape)
-
-                for sensor_id in range(0, cn.SENSOR_COUNT):
-                    self._data_changed[sensor_id] = True
+                self._data_changed = True
             except (ValueError, IndexError, TypeError):
                 # On format errors, we do not restart the serial
                 logger.warning(f'Invalid data received: `{",".join([str(x) for x in data])}`')
@@ -108,12 +106,12 @@ class SerialPortParser:
 
     @property
     def data(self):
-        self._data_changed = [False] * cn.SENSOR_COUNT
+        self._data_changed = False
         return self.buffer / cn.DATA_NORMALIZATION_COEFFICIENT
 
     @property
     def data_changed(self):
-        return self._data_changed[:]
+        return self._data_changed
 
 
 if __name__ == '__main__':

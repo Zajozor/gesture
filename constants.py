@@ -6,6 +6,7 @@ from PyQt5.QtGui import QFont
 from processing.consumers.cell import CellContent
 from utils import Gesture
 
+# The input from the sensor is a 2 byte signed integer, which then normalized to a float between -1 and 1
 DATA_NORMALIZATION_COEFFICIENT = 32768
 
 SERIAL_PORT_BAUD_RATE = 460800
@@ -20,6 +21,12 @@ SENSOR_READING_DELIMITER = b'\xff\x00\xff\x2a'
 SENSOR_CORRECT_READING_LENGTH = 60
 SENSOR_CHANNEL_COUNT = 6
 SENSOR_DATA_DTYPE = np.dtype(np.int16).newbyteorder('>')
+
+# When drawing the values from the sensor inside the application, to enhance readability, we draw the
+# accelerometer data on top 65% of the image, and the gyroscope data below.
+# drawn_data = data * coefficient + offset
+SENSOR_DRAW_COEFFICIENT = np.array([0.65, 0.65, 0.65, 0.35, 0.35, 0.35])
+SENSOR_DRAW_OFFSET = np.array([0.35, 0.35, 0.35, -0.65, -0.65, -0.65])
 
 SENSOR_UPDATE_LOG_FREQUENCY = 1  # Seconds
 

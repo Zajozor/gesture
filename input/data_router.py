@@ -26,7 +26,7 @@ class DataRouter:
         self.enable_count_logs: bool = enable_count_logs
         self.sleep_time: float = 1.0 / frequency
         self.last_update: float = time.time()
-        self.update_counts: List[int] = [0] * cn.SENSOR_COUNT
+        self.update_count: int = 0
 
         self.active: bool = False
         self.thread: Union[Thread, None] = None
@@ -42,22 +42,20 @@ class DataRouter:
     def start(self, threaded: bool):
         def update():
             while self.active:
-                data_changed: List[bool] = self.serial_port_parser_instance.data_changed
+                data_changed: bool = self.serial_port_parser_instance.data_changed
                 data: np.ndarray = self.serial_port_parser_instance.data
 
                 if self.enable_count_logs:
-                    for sensor_id in range(cn.SENSOR_COUNT):
-                        if data_changed[sensor_id]:
-                            self.update_counts[sensor_id] += 1
+                    if data_changed:
+                        self.update_count += 1
 
                     current_time = time.time()
-                    if (current_time - self.last_update > cn.SENSOR_UPDATE_LOG_FREQUENCY and sum(
-                            self.update_counts) > 0) \
+                    if (current_time - self.last_update > cn.SENSOR_UPDATE_LOG_FREQUENCY and self.update_count > 0) \
                             or current_time - self.last_update > 60 * cn.SENSOR_UPDATE_LOG_FREQUENCY:
-                        logger.info(f'Update counts after {current_time - self.last_update:.2f}s: '
-                                    f'{self.update_counts}, Σ: {sum(self.update_counts)}')
+                        logger.info(f'Updates after {current_time - self.last_update:.2f}s: '
+                                    f'{self.update_count}')
                         self.last_update = current_time
-                        self.update_counts = [0] * cn.SENSOR_COUNT
+                        self.update_count = 0
 
                 self.route_data(data, data_changed)
 
@@ -70,6 +68,6 @@ class DataRouter:
         else:
             update()
 
-    def route_data(self, data: np.ndarray, data_changed: List[bool]):
+    def route_data(self, data: np.ndarray, data_changed: bool):
         for consumer in self._consumers:
             consumer.receive_data(data, data_changed)

@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import Tuple
 
 import numpy as np
 
@@ -26,8 +26,10 @@ class DynamicSignalWidgetConsumer(DynamicSignalWidget, ConsumerMixin):
             for i in range(cell.count):
                 self.set_signal_color(cell.signal_ids[i], cn.COLORS.DEFAULT_SIGNAL_COLORS[i])
 
-    def receive_data(self, data: np.ndarray, data_changed: List[bool]):
+    def receive_data(self, data: np.ndarray, data_changed: bool):
+        if not data_changed:
+            return
+        drawn_data = data * cn.SENSOR_DRAW_COEFFICIENT + cn.SENSOR_DRAW_OFFSET
         for cell in self.cell_contents:
-            if data_changed[cell.input_sensor_id]:
-                for i, signal_id in enumerate(cell.signal_ids):
-                    self.roll_signal_values(signal_id, np.array([data[cell.input_sensor_id][i]]))
+            for i, signal_id in enumerate(cell.signal_ids):
+                self.roll_signal_values(signal_id, drawn_data[cell.input_sensor_id][i].copy().reshape(-1))

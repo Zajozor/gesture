@@ -84,7 +84,7 @@ class RecordItem(BaseItem):
 
         self.storage.data[self.name] = np.concatenate((
             self.storage.data[self.name],
-            np.array([signal.data for signal in self.signal_widgets])
+            [signal.data for signal in self.signal_widgets]
         ))
         self.data_router.remove_consumer(self.recording_consumer)
         GlobalEventFilter.get_instance().remove_key_hook(Qt.Key_Space, self.space_callback)

@@ -50,6 +50,8 @@ class DynamicSignalWidget(app.Canvas):
             for i in range(rows - 1):
                 self.visuals.append(InfiniteLineVisual((i + 1) / rows, vertical=False, color=(0, 0, 0, 1)))
 
+        self.visuals.append(InfiniteLineVisual(cn.SENSOR_DRAW_COEFFICIENT[0], vertical=False, color=(0, 0, 0, 1)))
+
     def _update_program_colors(self):
         self.program['a_color'] = self.signal_colors
 
