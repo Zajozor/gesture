@@ -70,7 +70,10 @@ class DataViewer(QWidget):
         gesture_tree = {}
         for gesture in gestures:
             parts = gesture.split(cn.FILE_NAME_SEPARATOR)
-            if len(parts) < 3 or (parts[0] != cn.GESTURE_PREFIX and parts[0] != cn.SESSION_PREFIX):
+            if parts[0] == cn.SESSION_PREFIX:
+                continue
+
+            if len(parts) < 3 or parts[0] != cn.GESTURE_PREFIX:
                 logger.debug(f'Skipping file {gesture}, unknown naming.')
                 continue
 

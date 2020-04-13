@@ -79,10 +79,8 @@ class SessionViewer(QWidget):
 
     def cleanup_shown_session(self):
         self.session_info_table.clear()
-
-    def cleanup_shown_gestures(self):
         for i in range(self.data_column.count()):
-            self.data_column.itemAt(i).widget().close()
+            self.data_column.itemAt(i).widget().plot_data(None)
 
     def show_session(self, current_item):
         if not current_item:
@@ -121,13 +119,16 @@ class SessionViewer(QWidget):
         current_gesture_data = self.current_session_data[
             self.current_gesture_names[self.gesture_list.currentIndex().row()]
         ]
-        self.cleanup_shown_gestures()
 
         def add_widgets():
-            for instance in current_gesture_data:
-                signal_widget = StaticSignalWidget()
-                self.data_column.addWidget(signal_widget)
-                signal_widget.plot_data(instance)
+            for i in range(len(current_gesture_data) - self.data_column.count()):
+                self.data_column.addWidget(StaticSignalWidget())
+
+            for i in range(len(current_gesture_data), self.data_column.count()):
+                self.data_column.itemAt(i).widget().plot_data(None)
+
+            for i, instance in enumerate(current_gesture_data):
+                self.data_column.itemAt(i).widget().plot_data(instance)
 
         QTimer.singleShot(0, add_widgets)
 
