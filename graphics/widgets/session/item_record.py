@@ -82,9 +82,11 @@ class RecordItem(BaseItem):
             raise ValueError(f'Key {self.name} is incompatible and already present in session storage.')
         self.storage.data.setdefault(self.name, np.array([]))
 
-        self.storage.data[self.name] = np.concatenate((
-            self.storage.data[self.name],
-            [signal.data for signal in self.signal_widgets]
-        ))
+        new_data = np.array([signal.data for signal in self.signal_widgets])
+        if new_data.size:
+            self.storage.data[self.name] = np.concatenate((
+                self.storage.data[self.name],
+                new_data
+            ))
         self.data_router.remove_consumer(self.recording_consumer)
         GlobalEventFilter.get_instance().remove_key_hook(Qt.Key_Space, self.space_callback)

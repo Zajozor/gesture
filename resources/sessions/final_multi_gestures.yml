@@ -1,39 +1,27 @@
 ---
-name: 2x8x3 session
+name: Set of multi sensor gestures
 slides:
   - items:
-      - {type: state, version: 1.0, session: eight_shuffle_twice}
+      - {type: state, version: 1.0, session: multi_gestures}
       - {type: text, text: "Welcome to a recording session and thanks for participating."}
       - type: text
         text: |
           Please provide a unique identifier for yourself,
           which you will use throughout your sessions:
       - {type: input, name: name, label: Name}
-      - {type: input, name: note, label: "Additional note"}
+      - {type: input, name: note, label: "Additional note (leave blank if not asked otherwise)"}
       - type: text
         text: |
           This session is does not include a tutorial and
           is meant for repeated participations.
-  - shuffle: {template: "$i", values: [9, 10, 11, 12, 14, 15, 17 ,18]}
+  - shuffle: {template: "{i}", values: [5, 6, 7, 8, 9, 10, 11, 14, 15, 17]}
     item:
       items:
         - {type: signal}
         - type: hstack
           items:
-            - {type: gif, id: "$i"}
-            - {type: record, count: 3, name: "$i"}
-    between:
-      items:
-        - {type: pause, timeout-ms: 2250}
-      disable_advance: true
-  - shuffle: {template: "$i", values: [9, 10, 11, 12, 14, 15, 17 ,18]}
-    item:
-      items:
-        - {type: signal}
-        - type: hstack
-          items:
-            - {type: gif, id: "$i"}
-            - {type: record, count: 3, name: "$i"}
+            - {type: gif, id: "{i}"}
+            - {type: record, count: 3, name: "{i}"}
     between:
       items:
         - {type: pause, timeout-ms: 2250}

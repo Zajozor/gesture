@@ -62,7 +62,7 @@ class SessionViewer(QWidget):
         with open(file, 'rb') as f:
             data = pickle.load(f)
             gesture_keys = [item for item in data if type(data[item]) == np.ndarray]
-        return data, gesture_keys
+        return data, sorted(gesture_keys, key=lambda x: str(x).zfill(5))
 
     @staticmethod
     def load_session_list():
@@ -79,6 +79,8 @@ class SessionViewer(QWidget):
 
     def cleanup_shown_session(self):
         self.session_info_table.clear()
+        self.gesture_list.clearSelection()
+        self.gesture_list.clear()
         for i in range(self.data_column.count()):
             self.data_column.itemAt(i).widget().plot_data(None)
 
@@ -107,7 +109,6 @@ class SessionViewer(QWidget):
             ))
         )))
 
-        self.gesture_list.clear()
         self.gesture_list.addItems(
             map(
                 lambda name: f'{name} ({len(self.current_session_data[name])} inst.)',
@@ -121,10 +122,13 @@ class SessionViewer(QWidget):
         ]
 
         def add_widgets():
-            for i in range(len(current_gesture_data) - self.data_column.count()):
+            new_count = len(current_gesture_data)
+            old_count = self.data_column.count()
+
+            for i in range(old_count, new_count):
                 self.data_column.addWidget(StaticSignalWidget())
 
-            for i in range(len(current_gesture_data), self.data_column.count()):
+            for i in range(new_count, old_count):
                 self.data_column.itemAt(i).widget().plot_data(None)
 
             for i, instance in enumerate(current_gesture_data):

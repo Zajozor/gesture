@@ -1,0 +1,36 @@
+---
+name: Set of single sensor gestures
+slides:
+  - items:
+      - {type: state, version: 1.0, session: single_gestures}
+      - {type: text, text: "Welcome to a recording session and thanks for participating."}
+      - type: text
+        text: |
+          Please provide a unique identifier for yourself,
+          which you will use throughout your sessions:
+      - {type: input, name: name, label: Name}
+      - {type: input, name: note, label: "Additional note (leave blank if not asked otherwise)"}
+      - type: text
+        text: |
+          This session is does not include a tutorial and
+          is meant for repeated participations.
+  - shuffle: {template: "{name}", values: ["20_diag", "21_square", "22_right", "23_left", "24_up", "25_down", "26_cwise", "27_ccwise"]}
+    item:
+      items:
+        - {type: signal}
+        - type: hstack
+          items:
+            - {type: image, image: '$../../single/{name}.png'}
+            - {type: record, count: 3, name: "{name}"}
+    between:
+      items:
+        - {type: pause, timeout-ms: 2250}
+      disable_advance: true
+  - items:
+      - type: text
+        text: |
+          Thank you for your time, by advancing to the next slide,
+          you will end the session and save your data.
+          By doing that, you agree that the data you provided shall be used
+          for research and open sourced without any license.
+...

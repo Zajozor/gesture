@@ -68,9 +68,13 @@ class SessionController(QWidget):
         return self.session_active
 
     def load_sessions(self):
-        sessions = map(lambda name: name.rsplit('.', 1)[0],
-                       filter(lambda name: name.endswith('.yml'),
-                              os.listdir(cn.SESSIONS_FOLDER)))
+        sessions = sorted(
+            map(lambda name: name.rsplit('.', 1)[0],
+                filter(lambda name: name.endswith('.yml'),
+                       os.listdir(cn.SESSIONS_FOLDER)
+                       )
+                )
+        )
         for session in sessions:
             self.selection_listbox.addItem(session)
         self.selection_listbox.setCurrentRow(0)
@@ -140,6 +144,8 @@ class SessionController(QWidget):
                 return type(item)(map(lambda x: replace_in_slide(needle, new_value, x), item))
             if type(item) == dict:
                 return dict(map(lambda x: replace_in_slide(needle, new_value, x), list(item.items())))
+            if type(item) == str and item[0] == '$':
+                return item[1:].replace(needle, new_value)
             return new_value if item == needle else item
 
         expanded_slides = []
