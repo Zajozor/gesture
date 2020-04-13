@@ -112,7 +112,7 @@ class SessionController(QWidget):
             if current_session_index == session_length or quit_session:
                 self.stacked_layout.setCurrentIndex(0)
                 self.session_active = False
-                SessionController.save_session_data(session_storage)
+                SessionController.save_session_data(session_storage, quit_session)
                 application_state.get_main_window().set_tab_switching_enabled(True)
                 return
 
@@ -124,11 +124,13 @@ class SessionController(QWidget):
         next_slide_callback()
 
     @staticmethod
-    def save_session_data(storage):
+    def save_session_data(storage, quit_session=False):
         session_name = cn.FILE_NAME_SEPARATOR.join([
             cn.SESSION_PREFIX,
             time.strftime(cn.FILE_NAME_DATETIME_FORMAT)
         ])
+        if quit_session:
+            session_name += '.quit'
         with open(cn.DATA_FOLDER / session_name, 'wb') as f:
             pickle.dump(storage.data, f)
         logger.info(f'Successfully saved session {session_name}')
