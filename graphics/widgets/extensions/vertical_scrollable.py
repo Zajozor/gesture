@@ -9,11 +9,12 @@ class VerticalScrollableExtension(QStackedLayout):
     By default the direction is BottomToTop.
     """
 
-    def __init__(self, scrolled_layout: QVBoxLayout, direction=QBoxLayout.BottomToTop, *args, **kwargs):
+    def __init__(self, scrolled_layout: QVBoxLayout, direction=QBoxLayout.BottomToTop, scrolled_spacing=0,
+                 *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         scrolled_layout.setDirection(direction)
-        scrolled_layout.setSpacing(0)
+        scrolled_layout.setSpacing(scrolled_spacing)
 
         # First we put the layout into a widget
         container_widget = QWidget()

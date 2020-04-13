@@ -17,6 +17,7 @@ class StaticSignalWidget(pg.GraphicsView):
         self.graphics_layout = pg.GraphicsLayout(*args, **kwargs)
         self.setCentralItem(self.graphics_layout)
 
+        self.setMinimumSize(600, 150)
         self.graphics_layout.setContentsMargins(0, 0, 0, 0)
         self.graphics_layout.setSpacing(0)
         # TODO possibly reduce the space taken by the axes a little more
@@ -46,11 +47,12 @@ class StaticSignalWidget(pg.GraphicsView):
             for j in range(cols):
                 signal = i * rows + j
                 p = self.graphics_layout.addPlot()
+                p.addLine(y=1 - 2 * cn.SENSOR_DRAW_COEFFICIENT[0])
                 for k in range(cn.SENSOR_CHANNEL_COUNT):
                     p.plot(draw_data[:length, signal, k], pen=cn.COLORS.PEN_COLORS[k])
-                if j > 0:
-                    p.hideAxis('left')
+                p.hideAxis('left')
                 p.vb.setMouseEnabled(False, False)
+                p.setYRange(-1, 1)
             self.graphics_layout.nextRow()
 
     def mousePressEvent(self, e):

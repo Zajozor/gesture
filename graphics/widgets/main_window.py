@@ -2,6 +2,7 @@ import warnings
 
 from graphics.widgets.recording_controller import RecordingController
 from graphics.widgets.session_controller import SessionController
+from graphics.widgets.session_viewer import SessionViewer
 from utils import application_state
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -58,6 +59,9 @@ class MainWindow(QTabWidget):
 
         dv = DataViewer()
         self.addTab(dv, 'Data viewer')
+
+        sv = SessionViewer()
+        self.addTab(sv, 'Session viewer')
 
     def set_tab_switching_enabled(self, state: bool):
         for i in range(self.count()):
