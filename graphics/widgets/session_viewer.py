@@ -121,20 +121,22 @@ class SessionViewer(QWidget):
             self.current_gesture_names[self.gesture_list.currentIndex().row()]
         ]
 
-        def add_widgets():
-            new_count = len(current_gesture_data)
-            old_count = self.data_column.count()
+        new_count = len(current_gesture_data)
+        old_count = self.data_column.count()
 
-            for i in range(old_count, new_count):
-                self.data_column.addWidget(StaticSignalWidget())
+        for i in range(old_count, new_count):
+            self.data_column.addWidget(StaticSignalWidget())
 
-            for i in range(new_count, old_count):
-                self.data_column.itemAt(i).widget().plot_data(None)
+        for i in range(new_count, old_count):
+            self.data_column.itemAt(i).widget().plot_data(None)
 
-            for i, instance in enumerate(current_gesture_data):
-                self.data_column.itemAt(i).widget().plot_data(instance)
+        for i, instance in enumerate(current_gesture_data):
+            # We use a function here, to create a temporary scope for index & data
+            def plot_data(index, data):
+                return lambda: self.data_column.itemAt(index).widget().plot_data(data)
 
-        QTimer.singleShot(0, add_widgets)
+            self.data_column.itemAt(i).widget().setBackground(0.9)
+            QTimer.singleShot(10 * i, plot_data(i, instance))
 
 
 if __name__ == '__main__':

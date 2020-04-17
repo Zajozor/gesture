@@ -33,8 +33,10 @@ class StaticSignalWidget(pg.GraphicsView):
         :param cols: Amount of columns in the canvas (calculated if None)
         """
         self.graphics_layout.clear()
+        self.setBackground('w')
         if data is None or data.shape == (0,):
             self.graphics_layout.addItem(pg.LabelItem('No data'))
+            self.setBackground(0.9)
             return
 
         self.data = data.copy()
