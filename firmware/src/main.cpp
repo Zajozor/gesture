@@ -35,6 +35,8 @@ struct sensorData {
 bool findConnection();
 void multiplexer_select(uint8_t i);
 void calibrate_sensor(uint8_t i);
+void getMPU6050scales(uint8_t &Gyro, uint8_t &Accl);
+void setMPU6050scales(uint8_t Gyro, uint8_t Accl);
 
 // Globals
 // ****************************************************************************
@@ -63,8 +65,9 @@ void setup()
     multiplexer_select(i);
     Serial.print("Sensor "); Serial.print(i); Serial.print(": MPU6050 connection ");
     sensor.initialize();
+    setMPU6050scales(MPU6050_GYRO_FS_1000, MPU6050_ACCEL_FS_4);
     Serial.println(sensor.testConnection() ? "successful" : "failed");
-    calibrate_sensor(i);    
+    calibrate_sensor(i);
   }
   Serial.println("Setup complete.");
 }
@@ -108,7 +111,8 @@ void loop()
   Serial.write(255);
   Serial.write(42);
 
-  delay(20 - (millis() - t1));
+  delay(25 - (millis() - t1));
+  //delay(10);
 }
 
 // Function bodies
@@ -164,4 +168,14 @@ void calibrate_sensor(uint8_t sensorId) {
   offsets[sensorId].gyrY = (int16_t)(gyrY / 100);
   offsets[sensorId].gyrZ = (int16_t)(gyrZ / 100);
   Serial.print("Sensor "); Serial.print(sensorId); Serial.println(" calibrated.");
+}
+
+void setMPU6050scales(uint8_t Gyro, uint8_t Accl) {
+  sensor.setFullScaleGyroRange(Gyro);
+  sensor.setFullScaleAccelRange(Accl);  
+}
+
+void getMPU6050scales(uint8_t &Gyro, uint8_t &Accl) {
+  Gyro = sensor.getFullScaleGyroRange();
+  Accl = sensor.getFullScaleAccelRange();
 }
