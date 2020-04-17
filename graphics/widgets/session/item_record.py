@@ -10,7 +10,7 @@ from graphics.widgets.session.item_base import BaseItem
 from graphics.widgets.signal_static import StaticSignalWidget
 from input.data_router import DataRouter
 from processing.consumers.recording import RecordingConsumer
-from utils import application_state, logger
+from utils import application_state
 
 
 class RecordItem(BaseItem):
@@ -77,16 +77,7 @@ class RecordItem(BaseItem):
         return widget
 
     def finish(self):
-        if self.name in self.storage.data and type(self.storage.data[self.name]) != np.ndarray:
-            logger.error(f'Incompatible key already present in storage: `{self.name}`!')
-            raise ValueError(f'Key {self.name} is incompatible and already present in session storage.')
-        self.storage.data.setdefault(self.name, np.array([]))
-
         new_data = np.array([signal.data for signal in self.signal_widgets])
-        if new_data.size:
-            self.storage.data[self.name] = np.concatenate((
-                self.storage.data[self.name],
-                new_data
-            ))
+        self.storage.store_signal_data(self.name, new_data)
         self.data_router.remove_consumer(self.recording_consumer)
         GlobalEventFilter.get_instance().remove_key_hook(Qt.Key_Space, self.space_callback)

@@ -59,7 +59,8 @@ FILE_NAME_SEPARATOR = '-'
 GESTURE_META_SEPARATOR = ','
 FILE_NAME_DATETIME_FORMAT = '%Y%m%d-%H%M%S'
 GESTURE_NAME_TYPE_INDEX = 1
-TRASH_GESTURE_INDEX = -1
+TRASH_GESTURE_INDEX = 0
+NULL_CLASS_INDEX = 28
 
 GESTURES = [
     Gesture(0, 'trash', 'Trash (mistake)'),
@@ -90,6 +91,7 @@ GESTURES = [
     Gesture(25, 'down', ''),
     Gesture(26, 'cwise', ''),
     Gesture(27, 'ccwise', ''),
+    Gesture(28, 'null', ''),
 ]
 
 EMOJI_FONT = QFont('Menlo', 24)
