@@ -1,71 +1,62 @@
-import math
-
 import numpy as np
-import pyqtgraph as pg
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout
+from matplotlib.backends.backend_qt5agg import FigureCanvas
+from matplotlib.figure import Figure
 
 import constants as cn
 
 
-class StaticSignalWidget(pg.GraphicsView):
+class StaticSignalWidget(QWidget):
     def __init__(self, *args, **kwargs):
-        """
-        Creates a PlotWidget. Suitable for one-off plots.
-        To actually show some data, the plot_data method needs to be used.
-        """
-        super().__init__(background='w')
-        self.graphics_layout = pg.GraphicsLayout(*args, **kwargs)
-        self.setCentralItem(self.graphics_layout)
-
+        super().__init__(*args, **kwargs)
         self.setMinimumSize(600, 150)
-        self.graphics_layout.setContentsMargins(0, 0, 0, 0)
-        self.graphics_layout.setSpacing(0)
-        # TODO possibly reduce the space taken by the axes a little more
-        self.mouse_press_callback = None
-        self.data = np.empty(0)
 
-    def plot_data(self, data: np.ndarray, length=None, rows=1, cols=None):
-        """
-        :param data: A three dimensional array of shape [time, sensor/signal, channel/axis]
-        :param length: length to show (calculated if None)
-        :param rows: Amount of rows in the canvas.
-        :param cols: Amount of columns in the canvas (calculated if None)
-        """
-        self.graphics_layout.clear()
-        self.setBackground('w')
+        layout = QHBoxLayout()
+        self.setLayout(layout)
+
+        self.canvas = FigureCanvas(Figure(figsize=(5, 3), tight_layout=True))
+        # TODO close figure!
+        layout.addWidget(self.canvas)
+
+        self.data = np.empty(0)
+        self.mouse_press_callback = None
+
+    def plot_data(self, data):
+        self.canvas.figure.clear()
         if data is None or data.shape == (0,):
-            self.graphics_layout.addItem(pg.LabelItem('No data'))
-            self.setBackground(0.9)
             return
 
         self.data = data.copy()
         draw_data = self.data * cn.SENSOR_DRAW_COEFFICIENT + cn.SENSOR_DRAW_OFFSET
 
         assert len(draw_data.shape) == 3
-
-        if length is None:
-            length = draw_data.shape[0]
-        if cols is None:
-            cols = math.ceil(draw_data.shape[1] / rows)
+        length = draw_data.shape[0]
+        cols = draw_data.shape[1]
         assert draw_data.shape[2] == cn.SENSOR_CHANNEL_COUNT
 
-        for i in range(rows):
-            for j in range(cols):
-                signal = i * rows + j
-                p = self.graphics_layout.addPlot()
-                p.addLine(y=1 - 2 * cn.SENSOR_DRAW_COEFFICIENT[0])
-                for k in range(cn.SENSOR_CHANNEL_COUNT):
-                    p.plot(draw_data[:length, signal, k], pen=cn.COLORS.PEN_COLORS[k])
-                p.hideAxis('left')
-                p.vb.setMouseEnabled(False, False)
-                p.setYRange(-1, 1)
-            self.graphics_layout.nextRow()
+        # [time, sensor, channel]
+        xs = np.arange(length)
+        axs = self.canvas.figure.subplots(1, cols)
+
+        for i, ax in enumerate(axs):
+            for j in range(cn.SENSOR_CHANNEL_COUNT):
+                ax.plot(xs, draw_data[:, i, j], c=cn.COLORS.DEFAULT_SIGNAL_COLORS[j], linewidth=0.6)
+            ax.set_ylim(-1, 1)
+            ax.set_xticks(())
+            ax.set_yticks(())
+
+        self.canvas.figure.tight_layout()
+        for ax in axs:
+            ax.figure.canvas.draw()
 
     def mousePressEvent(self, e):
         if self.mouse_press_callback:
             self.mouse_press_callback(e)
         super().mousePressEvent(e)
+
+    def setBackground(self, *args, **kwargs):
+        pass
 
 
 # TODO use ConsoleWidget somewhere
@@ -77,7 +68,7 @@ if __name__ == '__main__':
 
     def redraw():
         main_widget.plot_data(np.random.rand(20, 5, 6) * 2 - 1)
-        QTimer.singleShot(100, redraw)
+        QTimer.singleShot(600, redraw)
 
 
     redraw()

@@ -60,7 +60,7 @@ class RecordItem(BaseItem):
     def select_signal_widget(self, index):
         self.signal_widgets[self.selected_index].setStyleSheet('')
         self.selected_index = index
-        if self.signal_widgets[index].graphics_layout.childItems():
+        if self.signal_widgets[index].data.shape != (0,):
             style = 'border-radius: 5px; border: 5px solid "#7AB567";'
         else:
             style = 'border-radius: 5px; border: 5px solid "#AA5C65";'
