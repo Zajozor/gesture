@@ -1,7 +1,7 @@
 from typing import Union
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QLabel, QHBoxLayout, QLineEdit, QWidget
+from PyQt5.QtWidgets import QLabel, QHBoxLayout, QLineEdit, QWidget, QPushButton
 
 from graphics.widgets.session.item_base import BaseItem
 from utils import logger
@@ -17,6 +17,16 @@ class InputItem(BaseItem):
         layout.addWidget(QLabel(self.item_spec.get('label', '')))
         layout.addWidget(self.line_edit)
         layout.setAlignment(Qt.AlignCenter)
+
+        if 'choices' in self.item_spec:
+            for choice in self.item_spec['choices']:
+                button = QPushButton(choice)
+
+                def choice_callback(text):
+                    return lambda: self.line_edit.setText(text)
+
+                button.clicked.connect(choice_callback(choice))
+                layout.addWidget(button)
 
         widget = QWidget()
         widget.setLayout(layout)
