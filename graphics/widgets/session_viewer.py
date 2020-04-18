@@ -132,11 +132,8 @@ class SessionViewer(QWidget):
 
         for i, instance in enumerate(current_gesture_data):
             # We use a function here, to create a temporary scope for index & data
-            def plot_data(index, data):
-                return lambda: self.data_column.itemAt(index).widget().plot_data(data)
-
-            self.data_column.itemAt(i).widget().setBackground(0.9)
-            QTimer.singleShot(10 * i, plot_data(i, instance))
+            w = self.data_column.itemAt(i).widget()
+            w.plot_data(instance)
 
 
 if __name__ == '__main__':

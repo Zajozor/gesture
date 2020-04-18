@@ -1,6 +1,7 @@
 import numpy as np
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout
+from matplotlib import gridspec
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
 
@@ -15,17 +16,20 @@ class StaticSignalWidget(QWidget):
         layout = QHBoxLayout()
         self.setLayout(layout)
 
-        self.canvas = FigureCanvas(Figure(figsize=(5, 3), tight_layout=True))
+        self.canvas = FigureCanvas(Figure(figsize=(5, 1), tight_layout=True))
         # TODO close figure!
         layout.addWidget(self.canvas)
 
         self.data = np.empty(0)
         self.mouse_press_callback = None
+        self.canvas.mpl_connect('button_press_event', self.figure_on_click)
 
     def plot_data(self, data):
         self.canvas.figure.clear()
         if data is None or data.shape == (0,):
+            self.set_background('gray')
             return
+        self.set_background('white')
 
         self.data = data.copy()
         draw_data = self.data * cn.SENSOR_DRAW_COEFFICIENT + cn.SENSOR_DRAW_OFFSET
@@ -37,7 +41,7 @@ class StaticSignalWidget(QWidget):
 
         # [time, sensor, channel]
         xs = np.arange(length)
-        axs = self.canvas.figure.subplots(1, cols)
+        axs = self.canvas.figure.subplots(1, cols, gridspec_kw={'wspace': 0})
 
         for i, ax in enumerate(axs):
             for j in range(cn.SENSOR_CHANNEL_COUNT):
@@ -45,18 +49,18 @@ class StaticSignalWidget(QWidget):
             ax.set_ylim(-1, 1)
             ax.set_xticks(())
             ax.set_yticks(())
+            ax.set_title(f'{data.shape}')
 
         self.canvas.figure.tight_layout()
         for ax in axs:
             ax.figure.canvas.draw()
 
-    def mousePressEvent(self, e):
+    def figure_on_click(self, e):
         if self.mouse_press_callback:
             self.mouse_press_callback(e)
-        super().mousePressEvent(e)
 
-    def setBackground(self, *args, **kwargs):
-        pass
+    def set_background(self, color):
+        self.canvas.figure.patch.set_facecolor(color)
 
 
 # TODO use ConsoleWidget somewhere
