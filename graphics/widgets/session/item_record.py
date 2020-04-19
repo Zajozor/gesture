@@ -54,17 +54,16 @@ class RecordItem(BaseItem):
 
     def update_signal_widgets(self):
         selected_widget = self.signal_widgets[self.selected_index]
-        selected_widget.plot_data(self.recording_consumer.gesture_data)
+        selected_widget.plot_data(self.recording_consumer.gesture_data, draw_stride=10)
         self.select_signal_widget((self.selected_index + 1) % len(self.signal_widgets))
 
     def select_signal_widget(self, index):
-        self.signal_widgets[self.selected_index].setStyleSheet('')
+        self.signal_widgets[self.selected_index].set_border_color(None)
         self.selected_index = index
         if self.signal_widgets[index].data.shape != (0,):
-            style = 'border-radius: 5px; border: 5px solid "#7AB567";'
+            self.signal_widgets[index].set_border_color('#7AB567')
         else:
-            style = 'border-radius: 5px; border: 5px solid "#AA5C65";'
-        self.signal_widgets[index].setStyleSheet(style)
+            self.signal_widgets[index].set_border_color('#AA5C65')
 
     def get_widget(self) -> Union[QWidget, None]:
         widget = QWidget()

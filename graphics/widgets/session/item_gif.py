@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QLabel, QWidget, QFrame, QVBoxLayout, QProgressBar, 
 import constants as cn
 from graphics.event_filter import GlobalEventFilter
 from graphics.widgets.session.item_base import BaseItem
+from utils import logger
 
 MEDIA_FOLDER = cn.SESSIONS_FOLDER / 'media'
 
@@ -44,10 +45,15 @@ class GIFItem(BaseItem):
         self.gif_progress_bar.setMaximum(last_frame)
 
         def update_animation_progress(frame_index):
-            self.gif_progress_bar.setValue(frame_index)
-            if frame_index == last_frame:
-                self.movie.setPaused(True)
-                QTimer.singleShot(1000, lambda: self.movie.setPaused(False))
+            try:
+                self.gif_progress_bar.setValue(frame_index)
+                if frame_index == last_frame:
+                    self.movie.setPaused(True)
+                    QTimer.singleShot(1000, lambda: self.movie.setPaused(False))
+            except RuntimeError:
+                # This is a temporary fix, because the parent widget is deleted manually
+                logger.debug('Gif Item Progress bar deleted before stopping.')
+                self.movie.stop()
 
         self.movie.frameChanged.connect(update_animation_progress)
         GlobalEventFilter.get_instance().install_key_hook(Qt.Key_Space, self.replay_movie)
@@ -80,4 +86,5 @@ class GIFItem(BaseItem):
             self.gif_progress_bar.setGraphicsEffect(None)
 
     def finish(self):
+        self.movie.stop()
         GlobalEventFilter.get_instance().remove_key_hook(Qt.Key_Space, self.replay_movie)

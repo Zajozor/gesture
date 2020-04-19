@@ -1,7 +1,6 @@
 import numpy as np
 from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication, QWidget, QHBoxLayout
-from matplotlib import gridspec
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
 
@@ -17,6 +16,7 @@ class StaticSignalWidget(QWidget):
         self.setLayout(layout)
 
         self.canvas = FigureCanvas(Figure(figsize=(5, 1), tight_layout=True))
+        self.canvas.figure.patch.set_linewidth(3)
         # TODO close figure!
         layout.addWidget(self.canvas)
 
@@ -24,7 +24,7 @@ class StaticSignalWidget(QWidget):
         self.mouse_press_callback = None
         self.canvas.mpl_connect('button_press_event', self.figure_on_click)
 
-    def plot_data(self, data):
+    def plot_data(self, data, draw_stride=1):
         self.canvas.figure.clear()
         if data is None or data.shape == (0,):
             self.set_background('gray')
@@ -32,7 +32,7 @@ class StaticSignalWidget(QWidget):
         self.set_background('white')
 
         self.data = data.copy()
-        draw_data = self.data * cn.SENSOR_DRAW_COEFFICIENT + cn.SENSOR_DRAW_OFFSET
+        draw_data = self.data[::draw_stride] * cn.SENSOR_DRAW_COEFFICIENT + cn.SENSOR_DRAW_OFFSET
 
         assert len(draw_data.shape) == 3
         length = draw_data.shape[0]
@@ -61,6 +61,10 @@ class StaticSignalWidget(QWidget):
 
     def set_background(self, color):
         self.canvas.figure.patch.set_facecolor(color)
+
+    def set_border_color(self, color):
+        self.canvas.figure.patch.set_edgecolor(color)
+        self.canvas.draw()
 
 
 # TODO use ConsoleWidget somewhere

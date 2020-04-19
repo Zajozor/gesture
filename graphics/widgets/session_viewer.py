@@ -2,7 +2,6 @@ import os
 import pickle
 
 import numpy as np
-from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QListWidget, QLabel, \
     QBoxLayout, QTableWidget, QTableWidgetItem
 

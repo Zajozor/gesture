@@ -32,4 +32,4 @@ class DynamicSignalWidgetConsumer(DynamicSignalWidget, ConsumerMixin):
         drawn_data = data * cn.SENSOR_DRAW_COEFFICIENT + cn.SENSOR_DRAW_OFFSET
         for cell in self.cell_contents:
             for i, signal_id in enumerate(cell.signal_ids):
-                self.roll_signal_values(signal_id, drawn_data[cell.input_sensor_id][i].copy().reshape(-1))
+                self.roll_signal_values(signal_id, drawn_data[cell.input_sensor_id][i].reshape(-1))

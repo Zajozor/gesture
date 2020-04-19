@@ -108,6 +108,7 @@ class SessionController(QWidget):
 
             if current_slide_widget:
                 current_slide_widget.close()
+                current_slide_widget.deleteLater()
 
             if current_session_index == session_length or quit_session:
                 self.stacked_layout.setCurrentIndex(0)

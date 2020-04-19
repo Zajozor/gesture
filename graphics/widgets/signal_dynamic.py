@@ -107,13 +107,12 @@ class DynamicSignalWidget(app.Canvas):
 
     def roll_signal_values(self, signal_id: int, values: np.ndarray):
         roll_count = values.shape[0]
-        self.signal_values[signal_id: signal_id + self.length] = np.concatenate((
-            self.signal_values[signal_id + roll_count: signal_id + self.length],
-            values
-        ))
-        self._update_program_values()
+        self.signal_values[signal_id: signal_id + self.length - roll_count] = \
+            self.signal_values[signal_id + roll_count: signal_id + self.length]
+        self.signal_values[signal_id + self.length - roll_count: signal_id + self.length] = values
 
     def on_draw(self, _):
+        self._update_program_values()
         gloo.clear(color=True)
         self.program.draw('line_strip')
         for visual in self.visuals:

@@ -19,4 +19,5 @@ class SignalItem(BaseItem):
         return self.dynamic_signal_widget_consumer.native
 
     def finish(self):
+        self.dynamic_signal_widget_consumer.on_close()
         self.data_router.remove_consumer(self.dynamic_signal_widget_consumer)

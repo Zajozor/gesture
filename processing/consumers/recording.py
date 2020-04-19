@@ -35,7 +35,7 @@ class RecordingConsumer(ConsumerMixin):
 
     def receive_data(self, data: np.ndarray, _):
         if self.recording_active.is_set():
-            self.raw_gesture_data[self.current_gesture_index] = data.copy()
+            self.raw_gesture_data[self.current_gesture_index] = data
             self.current_gesture_index += 1
             if self.current_gesture_index >= self.max_length:
                 logger.error('Maximum gesture length exceeded, overflowing..')

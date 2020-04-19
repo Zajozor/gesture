@@ -43,7 +43,8 @@ class DataRouter:
         def update():
             while self.active:
                 data_changed: bool = self.serial_port_parser_instance.data_changed
-                data: np.ndarray = self.serial_port_parser_instance.data
+                # Here we copy the data, so that the parser does not change it for us while we work with it
+                data: np.ndarray = self.serial_port_parser_instance.data.copy()
 
                 if self.enable_count_logs:
                     if data_changed:
