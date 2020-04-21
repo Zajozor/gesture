@@ -28,6 +28,7 @@ class StaticSignalWidget(QWidget):
         self.canvas.figure.clear()
         if data is None or data.shape == (0,):
             self.set_background('gray')
+            self.canvas.draw()
             return
         self.set_background('white')
 

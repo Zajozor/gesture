@@ -76,7 +76,9 @@ class RecordItem(BaseItem):
         return widget
 
     def finish(self):
-        new_data = np.array([signal.data for signal in self.signal_widgets])
-        self.storage.store_signal_data(self.name, new_data)
+        instances = np.empty(len(self.signal_widgets), dtype=object)
+        for i, signal_widget in enumerate(self.signal_widgets):
+            instances[i] = signal_widget.data
+        self.storage.store_signal_data(self.name, instances)
         self.data_router.remove_consumer(self.recording_consumer)
         GlobalEventFilter.get_instance().remove_key_hook(Qt.Key_Space, self.space_callback)

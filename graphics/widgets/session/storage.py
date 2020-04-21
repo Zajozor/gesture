@@ -20,7 +20,10 @@ class SessionStorage:
         self.data.setdefault(name, np.array([]))
 
         if instances.size:
-            self.data[name] = np.concatenate((
-                self.data[name],
-                instances
-            ))
+            try:
+                self.data[name] = np.concatenate((
+                    self.data[name],
+                    instances
+                ))
+            except ValueError as e:
+                logger.error(f'Failed to save to storage: {e}')
