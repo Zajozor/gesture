@@ -120,13 +120,20 @@ if __name__ == '__main__':
 
     def raw_serial():
         serial_port = serial.Serial(port='/dev/cu.SLAB_USBtoUART',
-                                    baudrate=9600,
+                                    baudrate=cn.SERIAL_PORT_BAUD_RATE,
                                     timeout=1000,
                                     write_timeout=1000)
         logger.warning('Running in echo mode for the serial port')
+        last_time = time.time()
+        counter = 0
         while True:
-            serial_line = serial_port.readline().rstrip().decode("utf-8")
-            logger.info(serial_line)
+            serial_line = serial_port.read_until(cn.SENSOR_READING_DELIMITER, 2 * cn.SENSOR_CORRECT_READING_LENGTH)
+            logger.debug(f'Received {len(serial_line) - len(cn.SENSOR_READING_DELIMITER)} bytes')
+            counter += 1
+            if time.time() - last_time > 1:
+                last_time = time.time()
+                logger.info(f'Frequency {counter}')
+                counter = 0
 
 
     def try_input_parser():
