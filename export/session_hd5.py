@@ -24,6 +24,15 @@ class CN:
         '20_diag': 1, '21_square': 2, '22_right': 3, '23_left': 4,
         '24_up': 5, '25_down': 6, '26_cwise': 7, '27_ccwise': 8,
     }
+    SINGLE_CLASS_IDS = list(range(9))
+    SINGLE_CLASS_LABELS = ['null',
+                           'diagonal', 'square', 'right', 'left',
+                           'up', 'down', 'clockwise', 'counter clockwise']
+    MULTI_CLASS_IDS = list(range(11))
+    MULTI_CLASS_LABELS = ['null',
+                          'hand swipe left', 'hand swipe right', 'pinch in', 'pinch out',
+                          'thumb double tap', 'grab', 'ungrab', 'page flip',
+                          'peace', 'metal']
     DATETIME_FILENAME_FORMAT = 's-%Y%m%d-%H%M%S'
     DEFAULT_USER_NAME = 'zajo'
 
@@ -74,6 +83,8 @@ def preprocess_session_data(h5_name, sessions):
         metas = h5f.create_dataset('meta', (instance_count,), dtype=np.dtype(
             [('datetime', np.int32), ('length', np.int32), ('user', np.int32)]))
         metas.attrs['d1'] = 'instance'
+        ys.attrs['classes'] = CN.SINGLE_CLASS_IDS if h5_name == 'waveglove_single' else CN.MULTI_CLASS_IDS
+        ys.attrs['labels'] = CN.SINGLE_CLASS_LABELS if h5_name == 'waveglove_single' else CN.MULTI_CLASS_LABELS
 
         counter = 0
         user_counter = {}
@@ -101,7 +112,6 @@ def preprocess_session_data(h5_name, sessions):
                         ys[counter] = CN.CLASS_TO_INT[key]
                         metas[counter] = (session_datetime, padded_data.shape[0], user_no)
                         counter += 1
-        ys.attrs['classes'] = np.unique(ys).astype(np.int8)
 
         print('-' * 70)
         print(f'Completed {h5_name} with {counter} instances.')
@@ -114,5 +124,5 @@ def preprocess_session_data(h5_name, sessions):
 
 
 if __name__ == '__main__':
-    preprocess_session_data('single', CN.SINGLE_LOAD_SESSIONS)
-    preprocess_session_data('multi', CN.MULTI_LOAD_SESSIONS)
+    preprocess_session_data('waveglove_single', CN.SINGLE_LOAD_SESSIONS)
+    preprocess_session_data('waveglove_multi', CN.MULTI_LOAD_SESSIONS)
