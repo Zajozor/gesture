@@ -110,7 +110,7 @@ def preprocess_session_data(h5_name, sessions):
                                              ((0, CN.GESTURE_CUTOFF_LENGTH - instance_data.shape[0]), (0, 0)))
                         xs[counter] = padded_data
                         ys[counter] = CN.CLASS_TO_INT[key]
-                        metas[counter] = (session_datetime, padded_data.shape[0], user_no)
+                        metas[counter] = (session_datetime, instance_data.shape[0], user_no)
                         counter += 1
 
         print('-' * 70)
