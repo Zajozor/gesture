@@ -1,12 +1,14 @@
 # Gesture
 
-A simple accelerometer-based gesture recognition framework.
-Created for a diploma thesis.
+A batteries-included IMU-based gesture recognition framework.
+Created for my diploma thesis.
 
-Connects through serial port to a custom
-ESP8266 based device, which gathers data from five accelerometers.
-The GUI allows to record and inspect data from accelerometers,
-the processing component performs gesture classification on the data.
+The framework connects through a serial port to a custom
+ESP8266 based device, which gathers data from five IMUs (accelerometer and gyroscope).
+The GUI allows to record and inspect data from the sensors,
+saving it to the disk. The export module than groups the
+recorded samples into a HDF5 file, to be used in gesture classification.
+The classification of the recorded samples is done in a separate project.
 
 Project is using Conda environment for package management.
 Use
@@ -18,7 +20,8 @@ to create an environment based on the used packages.
 The [socat](https://linux.die.net/man/1/socat)
 binary is required for simulation of the device.
 
-- [arduino](arduino) contains code used on the microprocessor
+- [export](export) contains tools for exporting the recorded data to HDF5 format
+- [firmware](firmware) contains code used on the microprocessor (Platform.IO project)
 - [graphics](graphics) contains sources for the GUI
     - [shaders](graphics/shaders) GLSL shaders
     - [extensions](graphics/widgets) Various Qt widgets used in the GUI
@@ -31,7 +34,6 @@ binary is required for simulation of the device.
 - [processing](processing) contains components for processing the data
     - [consumers](processing/consumers) consume data through DataRouter, either to display it in a GUI or
       for further processing
-    - [loading](processing/loading) helper functions to load saved gesture/session data
 - [resources](resources) Assets for the GUI (images, models, animations) and session definitions
 - [testing](testing) example resources used during development
     - [examples](testing/examples) contains example usages of some used libraries
